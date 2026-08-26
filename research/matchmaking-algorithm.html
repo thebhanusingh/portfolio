@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Multidimensional Matchmaking Algorithm — Bhanu Singh</title>
+<meta name="description" content="A literature review of Call of Duty's skill-based matchmaking, and a proposed algorithm to close the gap between players and developers.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230a0a0a'/%3E%3Ccircle cx='16' cy='17' r='6.5' fill='%23ffffff'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+
+<header class="site-nav">
+  <a class="site-nav__mark" href="../index.html">Bhanu Singh<span class="dot">.</span></a>
+  <button class="site-nav__toggle" aria-label="Toggle navigation" aria-expanded="false">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/></svg>
+  </button>
+  <nav class="site-nav__links" data-open="false">
+    <a href="../index.html">Home</a>
+    <a href="../projects.html">Work</a>
+    <a href="../about.html">About</a>
+    <a href="../research.html" aria-current="page">Research</a>
+    <a href="../contact.html">Contact</a>
+  </nav>
+</header>
+
+<main id="main">
+  <div class="wrap page-header">
+    <span class="eyebrow">03 / Systems Research — Spring 2026</span>
+    <h1>Multidimensional Matchmaking Algorithm</h1>
+    <p>A research-focused project reviewing peer-reviewed papers on <em>Call of Duty</em>'s skill-based matchmaking (SBMM) — looking for the gap between what players experience and what the system was designed to do.</p>
+  </div>
+
+  <div class="wrap">
+    <h2>The problem</h2>
+    <div class="media-item" style="max-width:640px; margin-inline:auto;">
+      <figure class="media-item" style="border:0; box-shadow:none;">
+        <img src="../assets/research/img/matchmaking/matchmaking-01-goal.jpg" alt="Goal statement diagram for the project" loading="lazy">
+        <figcaption>Goal statement — close the understanding gap between players and Activision's matchmaking service.</figcaption>
+      </figure>
+    </div>
+    <p style="color: var(--muted); max-width: 68ch; margin-top: var(--space-4);">An Activision-published study found quit rates rise sharply when players aren't matched on skill. That dissatisfaction shows up in the numbers too — both figures below are redrawn from public data for this project.</p>
+
+    <div class="media-gallery">
+      <figure class="media-item">
+        <img src="../assets/research/img/matchmaking/matchmaking-02-sales.jpg" alt="Chart of Call of Duty unit sales in millions across BlackOps 2010, Advanced Warfare 2014, and WWII 2017" loading="lazy">
+        <figcaption>Unit sales sliding across three <em>Call of Duty</em> titles — BlackOps (31M) down to WWII (~20M).</figcaption>
+      </figure>
+      <figure class="media-item">
+        <img src="../assets/research/img/matchmaking/matchmaking-03-quitrate.jpg" alt="Chart of player quit rate related to matchmaking" loading="lazy">
+        <figcaption>Player quit rate climbing as skill-based matchmaking complaints grew louder.</figcaption>
+      </figure>
+    </div>
+
+    <h2 style="margin-top: var(--space-7);">The proposed algorithm</h2>
+    <p style="color: var(--muted); max-width: 68ch;">A hybrid system layered on top of existing SBMM — drawing on features from competing matchmaking services to make the structure more transparent and account for more of what actually affects player experience.</p>
+
+    <div class="media-item" style="margin-top: var(--space-4);">
+      <figure class="media-item" style="border:0; box-shadow:none;">
+        <img src="../assets/research/img/matchmaking/matchmaking-04-features.jpg" alt="Diagram of the algorithm's three feature groups: Hybrid Matchmaking Algorithm, Behavioral and Social Layer, and Engagement and Churn Prediction Model" loading="lazy">
+        <figcaption>Three layers: a hybrid latency/skill-balance core, a behavioral &amp; social layer (toxicity filters, playstyle matching), and an engagement/churn-prediction model that keeps tuning itself.</figcaption>
+      </figure>
+    </div>
+
+    <div class="media-gallery" style="margin-top: var(--space-4);">
+      <figure class="media-item">
+        <img src="../assets/research/img/matchmaking/matchmaking-05-process.jpg" alt="Process chart for the algorithm" loading="lazy">
+        <figcaption>The process chart — how a match request flows through each layer.</figcaption>
+      </figure>
+      <figure class="media-item">
+        <img src="../assets/research/img/matchmaking/matchmaking-06-final.png" alt="Complete Multidimensional Matchmaking Algorithm diagram, the final outcome of the project" loading="lazy">
+        <figcaption>The complete algorithm — final outcome of the project.</figcaption>
+      </figure>
+    </div>
+
+    <div class="prev-next" style="margin-top: var(--space-7);">
+      <a href="meta-narrative-rpg.html">&larr; Meta-narrative 2D RPG</a>
+      <a href="../research.html">All research &rarr;</a>
+    </div>
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap site-footer__row">
+    <div class="site-footer__links">
+      <a href="../index.html">Home</a>
+      <a href="../projects.html">Work</a>
+      <a href="../about.html">About</a>
+      <a href="../research.html">Research</a>
+      <a href="../contact.html">Contact</a>
+      <a href="mailto:bhanuudhaysingh@gmail.com">Email</a>
+    </div>
+    <small>&copy; <span data-year>2026</span> Bhanu Singh</small>
+  </div>
+</footer>
+
+<script src="../js/main.js"></script>
+</body>
+</html>

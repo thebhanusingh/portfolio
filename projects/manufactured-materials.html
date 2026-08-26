@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Manufactured Materials — Bhanu Singh</title>
+<meta name="description" content="A photorealistic material-authoring pipeline in Substance Designer and Painter, rendered in Unreal Engine 5 — new vs. worn variations of six manufactured materials.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230a0a0a'/%3E%3Ccircle cx='16' cy='17' r='6.5' fill='%23ffffff'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+
+<header class="site-nav">
+  <a class="site-nav__mark" href="../index.html">Bhanu Singh<span class="dot">.</span></a>
+  <button class="site-nav__toggle" aria-label="Toggle navigation" aria-expanded="false">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/></svg>
+  </button>
+  <nav class="site-nav__links" data-open="false">
+    <a href="../index.html">Home</a>
+    <a href="../projects.html" aria-current="page">Work</a>
+    <a href="../about.html">About</a>
+    <a href="../research.html">Research</a>
+    <a href="../contact.html">Contact</a>
+  </nav>
+</header>
+
+<main id="main">
+  <div class="wrap page-header">
+    <span class="eyebrow">07 / Materials</span>
+    <h1>Manufactured Materials</h1>
+    <p>Six manufactured materials, each built new-and-worn — a full authoring pipeline from procedural base to final render.</p>
+    <div class="tool-list">
+      <span class="tag">Substance Designer</span><span class="tag">Substance Painter</span><span class="tag">Maya (UVs)</span><span class="tag">Unreal Engine 5</span>
+    </div>
+  </div>
+
+  <div class="wrap">
+    <div class="art-frame" style="aspect-ratio:auto; padding:0; background:none; border:0; box-shadow:none;">
+      <img src="../assets/img/manufactured-materials/manufactured-materials-01-livingroom.jpg" alt="Living room scene rendered in Unreal Engine 5, showing the leather couch, marble table, and curtain materials together" loading="lazy" style="border-radius: var(--radius); border: 1px solid var(--border);">
+    </div>
+
+    <div class="prose" style="margin-top: var(--space-5);">
+      <p>Every material started as a procedural base in Substance Designer — roughness, normal detail, and albedo built from node graphs, not photos. From there each one split into two variations in Substance Painter: a <strong>new</strong> pass and a <strong>used</strong> pass, hand-painted with wear, scratches, dust, and surface degradation. Meshes got manually-built UVs in Maya to keep texel density even, so nothing stretched or tiled once the materials landed at full resolution in Unreal Engine.</p>
+    </div>
+
+    <div class="media-gallery" style="margin-top: var(--space-5);">
+      <div class="media-item">
+        <img src="../assets/img/manufactured-materials/manufactured-materials-02-couch-before-after.jpg" alt="Leather couch material — new vs. worn variation, side by side" loading="lazy">
+      </div>
+      <div class="media-item">
+        <img src="../assets/img/manufactured-materials/manufactured-materials-03-cushion-before-after.jpg" alt="Cushion fabric material — new vs. worn variation, side by side" loading="lazy">
+      </div>
+      <div class="media-item">
+        <img src="../assets/img/manufactured-materials/manufactured-materials-04-marble-before-after.jpg" alt="Table marble material — new vs. worn variation, side by side" loading="lazy">
+      </div>
+      <div class="media-item">
+        <img src="../assets/img/manufactured-materials/manufactured-materials-05-curtain-before-after.jpg" alt="Curtain fabric material — new vs. worn variation, side by side" loading="lazy">
+      </div>
+    </div>
+
+    <div class="prose" style="margin-top: var(--space-5);">
+      <p><strong>Reading the layers:</strong> below is one material's Substance Painter stack broken apart — base coat, then the individual wear/dust/scratch layers that get masked in on top to build the "used" variation.</p>
+    </div>
+    <div class="media-item" style="margin-top: var(--space-3); max-width: 720px;">
+      <img src="../assets/img/manufactured-materials/manufactured-materials-06-layers.jpg" alt="Individual Substance Painter texture layers for one material, shown broken apart" loading="lazy">
+    </div>
+
+    <div class="prev-next" style="margin-top: var(--space-7);">
+      <a href="static-cinematic-shots.html">&larr; Static Cinematic Shots</a>
+      <a href="playable-ue5-environment.html">Playable UE5 Environment &rarr;</a>
+    </div>
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap site-footer__row">
+    <div class="site-footer__links">
+      <a href="../index.html">Home</a>
+      <a href="../projects.html">Work</a>
+      <a href="../about.html">About</a>
+      <a href="../research.html">Research</a>
+      <a href="../contact.html">Contact</a>
+      <a href="mailto:bhanuudhaysingh@gmail.com">Email</a>
+    </div>
+    <small>&copy; <span data-year>2026</span> Bhanu Singh</small>
+  </div>
+</footer>
+
+<script src="../js/main.js"></script>
+</body>
+</html>

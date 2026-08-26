@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ArchViz — Ancestral Home — Bhanu Singh</title>
+<meta name="description" content="A 3D reconstruction of a family home, from architect's floor plan to a lit Unreal Engine walkthrough.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230a0a0a'/%3E%3Ccircle cx='16' cy='17' r='6.5' fill='%23ffffff'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+
+<header class="site-nav">
+  <a class="site-nav__mark" href="../index.html">Bhanu Singh<span class="dot">.</span></a>
+  <button class="site-nav__toggle" aria-label="Toggle navigation" aria-expanded="false">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/></svg>
+  </button>
+  <nav class="site-nav__links" data-open="false">
+    <a href="../index.html">Home</a>
+    <a href="../projects.html" aria-current="page">Work</a>
+    <a href="../about.html">About</a>
+    <a href="../research.html">Research</a>
+    <a href="../contact.html">Contact</a>
+  </nav>
+</header>
+
+<main id="main">
+  <div class="wrap page-header">
+    <span class="eyebrow">05 / ArchViz</span>
+    <h1>ArchViz — Ancestral Home</h1>
+    <p>A remake of my family's ancestral home, based on the architect's plan for its renovation — rebuilt so it could stand again, digitally.</p>
+    <div class="tool-list">
+      <span class="tag">Blender</span><span class="tag">Unreal Engine</span><span class="tag">Personal</span>
+    </div>
+  </div>
+
+  <div class="wrap">
+    <div class="media-item">
+      <img src="../assets/img/archviz/archviz-01.png" alt="Ancestral home ArchViz, floor plan reference" loading="eager">
+    </div>
+
+    <div class="prose" style="margin-top: var(--space-6);">
+      <p>This project remakes my ancestral home based on the plan produced by the architect handling its renovation. I added interior elements on top of the base plan to make the project feel lived-in rather than just structural.</p>
+      <p>The house was originally built in the early 1930s, so the renovation called for an updated floor plan. Once I'd redone the floor map, I brought it into Blender as a base for the 3D model. The first task was calibration — scaling the reference image so its printed scale matched Blender's units exactly. With that locked in, I rebuilt the house in 3D and imported the model into Unreal Engine for lighting and set dressing.</p>
+
+      <div class="media-gallery" id="archviz-gallery"></div>
+      <script>
+        (function () {
+          var gallery = document.getElementById('archviz-gallery');
+          for (var i = 2; i <= 24; i++) {
+            var n = String(i).padStart(2, '0');
+            var item = document.createElement('div');
+            item.className = 'media-item';
+            if (i % 5 === 0) item.className += ' media-item--span2';
+            item.innerHTML = '<img src="../assets/img/archviz/archviz-' + n + '.png" alt="Ancestral home ArchViz, Unreal Engine render" loading="lazy">';
+            gallery.appendChild(item);
+          }
+        })();
+      </script>
+    </div>
+
+    <div class="prev-next" style="margin-top: var(--space-7);">
+      <a href="nurbs-space-shuttle.html">&larr; NURBs Space Shuttle</a>
+      <a href="static-cinematic-shots.html">Static Cinematic Shots &rarr;</a>
+    </div>
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap site-footer__row">
+    <div class="site-footer__links">
+      <a href="../index.html">Home</a>
+      <a href="../projects.html">Work</a>
+      <a href="../about.html">About</a>
+      <a href="../research.html">Research</a>
+      <a href="../contact.html">Contact</a>
+      <a href="mailto:bhanuudhaysingh@gmail.com">Email</a>
+    </div>
+    <small>&copy; <span data-year>2026</span> Bhanu Singh</small>
+  </div>
+</footer>
+
+<script src="../js/main.js"></script>
+</body>
+</html>

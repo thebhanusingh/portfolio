@@ -1,0 +1,94 @@
+/* ============================================================
+   Home hero — interactive street scene, dark-mode flat
+   illustration (reference: hirotos.com structure, dark palette)
+   ============================================================ */
+
+.hero {
+  position: relative;
+  padding-top: var(--space-5);
+}
+
+.hero__intro {
+  padding-inline: var(--space-4);
+  max-width: var(--container);
+  margin-inline: auto;
+  margin-bottom: var(--space-4);
+}
+.hero__intro h1 { margin-top: var(--space-2); }
+.hero__intro p { margin-top: var(--space-3); font-size: 1.1rem; }
+.hero__intro .btn { margin-top: var(--space-4); }
+
+.street-hint {
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  color: var(--muted-dim);
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-top: var(--space-3);
+}
+.street-hint svg { width: 15px; height: 15px; opacity: 0.7; }
+
+.street-viewport {
+  position: relative;
+  width: 100%;
+  height: min(72vh, 620px);
+  min-height: 380px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  cursor: grab;
+  scrollbar-width: thin;
+  scrollbar-color: var(--gold-dim) transparent;
+  -webkit-overflow-scrolling: touch;
+  border-block: 1px solid var(--border);
+  background: var(--bg-soft);
+}
+.street-viewport[data-dragging="true"] { cursor: grabbing; scroll-behavior: auto; }
+
+.street-scene {
+  height: 100%;
+  width: 2600px;
+  max-width: none;
+  display: block;
+  touch-action: pan-y;
+}
+
+.street-nudge {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 20;
+  min-width: 44px;
+  min-height: 44px;
+  border-radius: 999px;
+  background: rgba(20, 20, 24, 0.85);
+  border: 1px solid var(--border);
+  color: var(--fg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(6px);
+  transition: transform 0.15s var(--ease-standard), border-color 0.15s var(--ease-standard);
+}
+.street-nudge:hover { transform: translateY(-50%) scale(1.06); border-color: var(--gold); }
+.street-nudge--left { left: var(--space-3); }
+.street-nudge--right { right: var(--space-3); }
+.street-nudge svg { width: 18px; height: 18px; }
+
+/* ---- interactive elements inside the SVG ---- */
+.street-lamp { cursor: pointer; }
+.street-lamp .lamp-glow { opacity: 0; transition: opacity 0.3s var(--ease-standard); }
+.street-lamp .lamp-bulb { fill: #3a3a40; transition: fill 0.3s var(--ease-standard); }
+.street-lamp.lit .lamp-glow { opacity: 1; }
+.street-lamp.lit .lamp-bulb { fill: #ffd666; }
+.street-lamp:focus-visible { outline: 2px solid var(--gold); outline-offset: 4px; border-radius: 8px; }
+
+.street-prop { cursor: pointer; }
+.street-prop:focus-visible { outline: 2px solid var(--gold); outline-offset: 4px; border-radius: 8px; }
+.street-prop { transition: transform 0.4s var(--ease-standard); transform-box: fill-box; transform-origin: 50% 50%; }
+
+.mono-label { font-family: var(--font-mono); }
+
+@media (max-width: 640px) {
+  .street-viewport { height: 62vh; min-height: 320px; }
+}

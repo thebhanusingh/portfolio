@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>From Capture to Cut — Bhanu Singh</title>
+<meta name="description" content="Ongoing MFA thesis: a relightable 3D Gaussian Splatting pipeline for virtual production on LED volume stages. Sprint 1 of 3.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230a0a0a'/%3E%3Ccircle cx='16' cy='17' r='6.5' fill='%23ffffff'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+
+<header class="site-nav">
+  <a class="site-nav__mark" href="../index.html">Bhanu Singh<span class="dot">.</span></a>
+  <button class="site-nav__toggle" aria-label="Toggle navigation" aria-expanded="false">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/></svg>
+  </button>
+  <nav class="site-nav__links" data-open="false">
+    <a href="../index.html">Home</a>
+    <a href="../projects.html">Work</a>
+    <a href="../about.html">About</a>
+    <a href="../research.html" aria-current="page">Research</a>
+    <a href="../contact.html">Contact</a>
+  </nav>
+</header>
+
+<main id="main">
+  <div class="wrap page-header">
+    <span class="eyebrow">00 / MFA Thesis — ITGM 755 · Ongoing, Sprint 1 of 3</span>
+    <h1>From Capture to Cut</h1>
+    <p>A relightable 3D Gaussian Splatting pipeline for virtual production on LED volume stages. Standard 3DGS captures bake in the lighting at time of capture — a Director of Photography can't change the sun angle or drop in a practical without the whole environment looking wrong. This thesis builds and tests a pipeline that separates lighting from geometry, so a captured location stays relightable on stage.</p>
+    <div class="tool-list">
+      <span class="tag">3D Gaussian Splatting</span><span class="tag">Unreal Engine 5.5</span><span class="tag">COLMAP</span><span class="tag">BRDF Decomposition</span><span class="tag">Volinga Plugin Pro</span>
+    </div>
+    <div class="contact-cta">
+      <a class="btn btn--gold" href="../assets/research/relightable-3dgs-sprint1.docx">Download full Sprint 1 documentation</a>
+    </div>
+  </div>
+
+  <div class="wrap">
+    <h2>The two methods, head to head</h2>
+    <p style="color: var(--muted); max-width: 68ch;">Both start from the same Canon R5 capture and COLMAP point cloud, trained through 3DGS, then split: <strong>Method A</strong> decomposes each Gaussian into albedo, roughness, and normals for physically accurate relighting — including a novel zero-shadow normalization pass, the thesis's original contribution. <strong>Method B</strong> is the commercial baseline, Volinga's faster mesh-proxy approach. Both were benchmarked on the same Poetter Hall interior capture.</p>
+
+    <div class="media-item" style="max-width:640px; margin-inline:auto; margin-top: var(--space-5);">
+      <figure class="media-item" style="border:0; box-shadow:none;">
+        <img src="../assets/research/img/thesis/performance-chart.png" alt="Bar chart: Method A (R3DGS) at 42fps vs Method B (Volinga) at 78fps, against a 60fps production threshold" loading="lazy">
+        <figcaption>Volinga clears the 60fps production threshold; R3DGS doesn't yet — but exposes three physically accurate material channels Volinga's mesh-proxy approach can't offer.</figcaption>
+      </figure>
+    </div>
+
+    <h2 style="margin-top: var(--space-7);">The pipeline</h2>
+    <p style="color: var(--muted); max-width: 68ch;">Eight stages from camera to LED volume. The zero-shadow pass (step 6) is the novel piece — it strips residual baked shadows out of the albedo channel before Unreal's Lumen ever sees the asset, which neither Gao et al.'s published method nor Volinga's commercial pipeline currently does.</p>
+    <div class="media-item" style="margin-top: var(--space-4);">
+      <figure class="media-item" style="border:0; box-shadow:none;">
+        <img src="../assets/research/img/thesis/pipeline-diagram.png" alt="Eight-stage pipeline diagram: expert interviews, rubric design, capture protocol, COLMAP and 3DGS training, BRDF decomposition, zero-shadow pass, UE5 deployment, LED volume evaluation" loading="lazy">
+        <figcaption>Orange = research, done. Teal = technical, planned for Thesis 2. The zero-shadow pass (★) is the novel contribution.</figcaption>
+      </figure>
+    </div>
+
+    <h2 style="margin-top: var(--space-7);">Why relighting needs physics, not just geometry</h2>
+    <p style="color: var(--muted); max-width: 68ch;">The technical premise: a captured scene has to be decomposed into real material properties — not just approximated with shadow-casting geometry — before it can be relit with physical accuracy. That decomposition is the Cook–Torrance microfacet BRDF, splitting reflectance into diffuse and specular components.</p>
+    <div class="media-item" style="max-width:420px; margin-top: var(--space-4);">
+      <figure class="media-item" style="border:0; box-shadow:none;">
+        <img src="../assets/research/img/thesis/brdf-diagram.png" alt="Diagram of diffuse and specular light reflectance off a surface, per the Cook-Torrance microfacet BRDF model" loading="lazy">
+        <figcaption>Diffuse + specular reflectance, after Cook &amp; Torrance (1982) — the physical model each captured Gaussian gets decomposed into.</figcaption>
+      </figure>
+    </div>
+
+    <h2 style="margin-top: var(--space-7);">The expert interview</h2>
+    <p style="color: var(--muted); max-width: 68ch;">One structured interview so far — a Production Designer with commercial LED volume credits (anonymous, IRB consent, ~20 min, audio recorded). Six themes came out of it; these three quotes directly shaped the evaluation rubric.</p>
+
+    <div class="media-gallery media-gallery--wide" style="margin-top: var(--space-5);">
+      <figure class="media-item">
+        <div style="padding: var(--space-4);">
+          <p style="font-family: var(--font-display); font-size: 1.25rem; color: var(--fg); margin: 0;">"Looking at a photo, even printed, is nowhere near the size of what it is in reality."</p>
+        </div>
+        <figcaption>Theme: Scale &amp; Embodiment — [12:49]. Virtual backgrounds must be judged at full scale, not on a monitor.</figcaption>
+      </figure>
+      <figure class="media-item">
+        <div style="padding: var(--space-4);">
+          <p style="font-family: var(--font-display); font-size: 1.25rem; color: var(--fg); margin: 0;">"Until we finish our job, it's hard for everyone else on the crew to get to theirs."</p>
+        </div>
+        <figcaption>Theme: Pipeline Bottleneck — [09:05]. The art department's turnaround gates the whole crew.</figcaption>
+      </figure>
+      <figure class="media-item media-item--span2">
+        <div style="padding: var(--space-4);">
+          <p style="font-family: var(--font-display); font-size: 1.25rem; color: var(--fg); margin: 0;">"We thought it was going to be a sunny day, but now it's raining. How can I still make the director's vision come to life?"</p>
+        </div>
+        <figcaption>Theme: Real-Time Relighting Need — [16:30]. On-set conditions change without notice — this is the whole reason relighting matters.</figcaption>
+      </figure>
+    </div>
+
+    <p class="video-note" style="margin-top: var(--space-4);">The interview also surfaced shadow direction as the single highest-priority signal of environmental consistency — it's now the highest-weighted criterion in the five-point practitioner rubric.</p>
+
+    <h2 style="margin-top: var(--space-7);">Where it stands</h2>
+    <p style="color: var(--muted); max-width: 68ch;">Sprint 1 proves the pipeline runs end-to-end on a real SCAD location and confirms the research gap: nobody publishing on 3DGS relighting — academic or commercial — strips baked directional lighting before mesh extraction. Thesis 2 adds a second capture location (the Bull Street exterior, with its glass shopfront problem), performance optimization to get Method A over the 60fps line, and a full 3–5 practitioner evaluation round on SCAD's actual LED volume stage.</p>
+
+    <div class="prev-next" style="margin-top: var(--space-7);">
+      <a href="../research.html">&larr; All research</a>
+      <a href="art-of-scale.html">The Art of Scale &rarr;</a>
+    </div>
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap site-footer__row">
+    <div class="site-footer__links">
+      <a href="../index.html">Home</a>
+      <a href="../projects.html">Work</a>
+      <a href="../about.html">About</a>
+      <a href="../research.html">Research</a>
+      <a href="../contact.html">Contact</a>
+      <a href="mailto:bhanuudhaysingh@gmail.com">Email</a>
+    </div>
+    <small>&copy; <span data-year>2026</span> Bhanu Singh</small>
+  </div>
+</footer>
+
+<script src="../js/main.js"></script>
+</body>
+</html>
