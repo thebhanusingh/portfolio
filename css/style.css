@@ -557,6 +557,25 @@ section { padding-block: var(--space-8); }
   margin-top: var(--space-5);
 }
 .video-frame video { display: block; width: 100%; height: auto; background: #000; }
+
+/* Ambient glow on the actual media frames, on top of the background wash.
+   On project/research pages the video or hero image is often the same
+   width as the content column, so it sits directly on the gradient and
+   hides it completely — this puts a version of the same live-sampled
+   color back in, right at the edge of the media itself, rather than only
+   in whatever background is left showing around it. Excluded from grid
+   thumbnails (.project-card) on purpose: those pages already have the
+   color visible in the gaps between cards, this would just be redundant
+   there. */
+.video-frame:not(.project-card *),
+.art-frame:not(.project-card *),
+.media-item:not(.project-card *) {
+  transition: box-shadow 1.2s var(--ease-standard);
+  box-shadow: 0 0 100px -14px var(--amb-color-1), 0 0 40px -18px var(--amb-color-2);
+}
+@media (prefers-reduced-motion: reduce) {
+  .video-frame, .art-frame, .media-item { transition: none; }
+}
 .video-frame figcaption {
   padding: var(--space-2) var(--space-3);
   font-size: 0.88rem;
