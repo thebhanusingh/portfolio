@@ -685,6 +685,7 @@ section { padding-block: var(--space-8); }
   position: absolute;
   inset: 0;
   overflow: hidden;
+  touch-action: none; /* dodging asteroids by dragging shouldn't also scroll/zoom the page */
 }
 .cockpit-bg {
   position: absolute;
@@ -744,6 +745,67 @@ section { padding-block: var(--space-8); }
   margin: 0;
 }
 
+.cockpit-score {
+  position: absolute;
+  top: var(--space-4);
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 5;
+  font-family: var(--font-mono);
+  font-weight: 600;
+  font-size: 1rem;
+  color: var(--fg);
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.7);
+  letter-spacing: 0.04em;
+}
+
+.cockpit-panel {
+  position: absolute;
+  left: 50%;
+  bottom: 15%;
+  transform: translateX(-50%);
+  z-index: 6;
+  text-align: center;
+  padding: var(--space-4) var(--space-6);
+  background: rgba(11, 11, 13, 0.75);
+  border: 1px solid rgba(242, 168, 61, 0.3);
+  border-radius: var(--radius);
+  backdrop-filter: blur(8px);
+  animation: cockpit-panel-in 0.4s var(--ease-standard);
+}
+@keyframes cockpit-panel-in {
+  from { opacity: 0; transform: translateX(-50%) translateY(8px); }
+  to { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
+.cockpit-panel__title {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 1.4rem;
+  color: var(--fg);
+  margin: 0;
+  white-space: nowrap;
+}
+.cockpit-panel__hint {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  color: var(--muted);
+  margin-top: var(--space-2);
+  white-space: nowrap;
+}
+.cockpit-panel__score {
+  font-family: var(--font-mono);
+  font-size: 1.05rem;
+  color: var(--gold);
+  margin-top: var(--space-1);
+}
+
+@media (max-width: 640px) {
+  .cockpit-panel { padding: var(--space-3) var(--space-4); bottom: 18%; }
+  .cockpit-panel__title { font-size: 1.15rem; white-space: normal; }
+  .cockpit-panel__hint { white-space: normal; }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .cockpit-overlay { transition: none; }
+  .cockpit-panel { animation: none; }
 }

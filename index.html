@@ -35,7 +35,7 @@
       <p>Most of what I do starts as a loose idea — a shot, a mechanic, a "what if this existed." Getting it on screen is really just problem-solving: the rig that has to move a certain way, the lighting setup that has to sell a mood, the pipeline that turns a sketch into something playable. That's the part I actually like.</p>
       <div style="display:flex; align-items:center; gap: var(--space-3); margin-top: var(--space-4);">
         <a class="btn btn--gold" href="projects.html">See the work</a>
-        <button type="button" id="cockpit-trigger" class="cockpit-trigger" aria-haspopup="dialog" aria-controls="cockpit-overlay" title="Engage">
+        <button type="button" id="cockpit-trigger" class="cockpit-trigger" aria-haspopup="dialog" aria-controls="cockpit-overlay" title="Engage" hidden>
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <path d="M12 2 L14.4 9.5 L21 12 L14.4 14.5 L12 22 L9.6 14.5 L3 12 L9.6 9.5 Z"/>
           </svg>
@@ -165,6 +165,19 @@
   <button type="button" id="cockpit-close" class="cockpit-close" aria-label="Exit — return to the site">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><line x1="5" y1="5" x2="19" y2="19"/><line x1="19" y1="5" x2="5" y2="19"/></svg>
   </button>
+
+  <span id="cockpit-score" class="cockpit-score" hidden>0.0s</span>
+
+  <div id="cockpit-prompt" class="cockpit-panel cockpit-prompt" hidden>
+    <p class="cockpit-panel__title">Asteroid field ahead</p>
+    <p class="cockpit-panel__hint">Arrow keys to aim, Space to fire — or tap to shoot</p>
+  </div>
+
+  <div id="cockpit-gameover" class="cockpit-panel cockpit-gameover" hidden>
+    <p class="cockpit-panel__title">One got through</p>
+    <p id="cockpit-gameover-score" class="cockpit-panel__score"></p>
+    <p class="cockpit-panel__hint">Press any key or tap to fly again</p>
+  </div>
 
   <p class="cockpit-credit">NASA, ESA &amp; the Hubble Heritage Team (STScI/AURA) — Pillars of Creation, Eagle Nebula</p>
 </div>
