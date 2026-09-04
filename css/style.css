@@ -280,11 +280,30 @@ section { padding-block: var(--space-8); }
   font-weight: 700;
 }
 
+/* Deliberately given its own visible circular background rather than
+   just three bare stroke lines on nothing — with the ambient gradient
+   now shifting the nav bar's backdrop color per-page, unfilled lines
+   alone could lose contrast against a brighter wash. A solid button
+   shape stays legible regardless of what's behind it, and reads
+   unambiguously as tappable. */
 .site-nav__toggle {
   display: none;
-  min-width: 44px; min-height: 44px;
-  align-items: center; justify-content: center;
+  width: 44px;
+  height: 44px;
+  min-width: 44px;
+  min-height: 44px;
+  align-items: center;
+  justify-content: center;
   color: var(--fg);
+  background: var(--bg-soft);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  transition: border-color 0.2s var(--ease-standard), color 0.2s var(--ease-standard);
+}
+.site-nav__toggle svg { width: 18px; height: 18px; }
+.site-nav__toggle:hover, .site-nav__toggle:focus-visible {
+  border-color: var(--accent-dim);
+  color: var(--accent);
 }
 
 @media (max-width: 720px) {
