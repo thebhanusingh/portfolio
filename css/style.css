@@ -110,18 +110,40 @@ body {
    plain fixed pseudo-element rather than a fixed background-image on body
    itself — background-attachment:fixed is a known jank/scroll-repaint
    trap on mobile Safari, this isn't. --page-hue is set per page inline on
-   <body> (see each page's opening tag); the two radial blobs sit a fixed
-   ~50° apart on the hue wheel so every page gets a coherent two-tone
-   wash instead of a single flat color. */
+   <body> (see each page's opening tag); the two static radial blobs sit a
+   fixed ~50° apart on the hue wheel, and act as the fallback for pages
+   with no imagery to sample (About, Contact) and as the base coat before
+   js/ambient-color.js finds its first real color.
+
+   On top of that, --amb-color-1/2 are two MORE radial blobs, driven live
+   by js/ambient-color.js: it watches every <img>/<video> in <main>, and
+   whichever one is nearest the top of the viewport gets sampled (drawn
+   into a tiny offscreen canvas and averaged) for its dominant color, so
+   the wash actually reflects whatever's on screen. Both default to
+   transparent, so a page with no media just shows the static wash above
+   untouched. Registering them via @property is what makes the color
+   itself transition smoothly instead of snapping — plain custom
+   properties aren't interpolatable without it; browsers that don't
+   support @property just get an instant color swap instead of a fade,
+   which is a fine degradation. */
+@property --amb-color-1 { syntax: '<color>'; inherits: true; initial-value: transparent; }
+@property --amb-color-2 { syntax: '<color>'; inherits: true; initial-value: transparent; }
+
 body::before {
   content: "";
   position: fixed;
   inset: 0;
   z-index: -2;
   pointer-events: none;
+  transition: --amb-color-1 1.4s var(--ease-standard), --amb-color-2 1.4s var(--ease-standard);
   background:
+    radial-gradient(ellipse 75% 65% at 18% 12%, var(--amb-color-1), transparent 68%),
+    radial-gradient(ellipse 75% 65% at 88% 88%, var(--amb-color-2), transparent 64%),
     radial-gradient(ellipse 90% 55% at 12% -8%, hsl(var(--page-hue) 70% 22% / 0.55), transparent 62%),
     radial-gradient(ellipse 80% 60% at 105% 112%, hsl(calc(var(--page-hue) + 50) 62% 15% / 0.42), transparent 58%);
+}
+@media (prefers-reduced-motion: reduce) {
+  body::before { transition: none; }
 }
 
 h1, h2, h3, h4 {
