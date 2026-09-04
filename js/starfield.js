@@ -51,7 +51,10 @@
   }
 
   function makeStars() {
-    var count = Math.max(36, Math.min(90, Math.round((w * h) / 22000)));
+    // scales with viewport area — a phone naturally lands near the floor,
+    // a desktop near the ceiling, keeping per-frame canvas work light
+    // either way
+    var count = Math.max(20, Math.min(90, Math.round((w * h) / 22000)));
     stars = [];
     for (var i = 0; i < count; i++) {
       var depth = 0.25 + Math.random() * 0.75; // 0.25 (far) – 1 (near)

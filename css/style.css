@@ -117,15 +117,18 @@ body {
 
    On top of that, --amb-color-1/2 are two MORE radial blobs, driven live
    by js/ambient-color.js: it watches every <img>/<video> in <main>, and
-   whichever one is nearest the top of the viewport gets sampled (drawn
-   into a tiny offscreen canvas and averaged) for its dominant color, so
-   the wash actually reflects whatever's on screen. Both default to
-   transparent, so a page with no media just shows the static wash above
-   untouched. Registering them via @property is what makes the color
-   itself transition smoothly instead of snapping — plain custom
-   properties aren't interpolatable without it; browsers that don't
-   support @property just get an instant color swap instead of a fade,
-   which is a fine degradation. */
+   whichever one sits nearest the MIDDLE of the viewport — where someone
+   is actually looking while reading or watching, not the top edge —
+   gets sampled (drawn into a tiny offscreen canvas and averaged) for its
+   dominant color. Both blobs are centered on that same middle point and
+   sized generously so the color visibly originates there and spreads
+   outward toward the top and sides, rather than sitting in fixed
+   corners. Both default to transparent, so a page with no media just
+   shows the static wash below untouched. Registering them via @property
+   is what makes the color itself transition smoothly instead of
+   snapping — plain custom properties aren't interpolatable without it;
+   browsers that don't support @property just get an instant color swap
+   instead of a fade, which is a fine degradation. */
 @property --amb-color-1 { syntax: '<color>'; inherits: true; initial-value: transparent; }
 @property --amb-color-2 { syntax: '<color>'; inherits: true; initial-value: transparent; }
 
@@ -137,8 +140,8 @@ body::before {
   pointer-events: none;
   transition: --amb-color-1 1.4s var(--ease-standard), --amb-color-2 1.4s var(--ease-standard);
   background:
-    radial-gradient(ellipse 75% 65% at 18% 12%, var(--amb-color-1), transparent 68%),
-    radial-gradient(ellipse 75% 65% at 88% 88%, var(--amb-color-2), transparent 64%),
+    radial-gradient(ellipse 95% 85% at 50% 46%, var(--amb-color-1), transparent 70%),
+    radial-gradient(ellipse 70% 60% at 50% 46%, var(--amb-color-2), transparent 55%),
     radial-gradient(ellipse 90% 55% at 12% -8%, hsl(var(--page-hue) 70% 22% / 0.55), transparent 62%),
     radial-gradient(ellipse 80% 60% at 105% 112%, hsl(calc(var(--page-hue) + 50) 62% 15% / 0.42), transparent 58%);
 }
@@ -562,7 +565,11 @@ section { padding-block: var(--space-8); }
 }
 .hero__intro h1 { margin-top: var(--space-2); }
 .hero__intro p { margin-top: var(--space-3); font-size: 1.1rem; }
-.hero__intro .btn { margin-top: var(--space-4); }
+/* margin-top intentionally lives on the CTA row wrapper in index.html,
+   not on .btn itself — .btn sits next to the cockpit-trigger icon there,
+   and align-items:center centers each flex child's own margin-box, so an
+   asymmetric margin on just one of them visibly knocks it out of line
+   with its neighbor. */
 
 /* -------------------- ambient starfield (site-wide, js/starfield.js) --------------------
    Sits between the gradient wash (z-index -2, above) and real content

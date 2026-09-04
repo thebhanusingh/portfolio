@@ -68,16 +68,21 @@
   var observer = new IntersectionObserver(function (entries) {
     var best = null;
     var bestDist = Infinity;
+    var viewportMid = window.innerHeight / 2;
     entries.forEach(function (entry) {
       if (!entry.isIntersecting) return;
-      var dist = Math.abs(entry.boundingClientRect.top);
+      var elMid = entry.boundingClientRect.top + entry.boundingClientRect.height / 2;
+      var dist = Math.abs(elMid - viewportMid);
       if (dist < bestDist) {
         bestDist = dist;
         best = entry.target;
       }
     });
     if (best) tryElement(best);
-  }, { rootMargin: '-35% 0px -50% 0px', threshold: [0, 0.1, 0.3] });
+    // whatever's centered in the viewport right now drives the color — not
+    // whatever's nearest the top edge — since that's where someone's
+    // attention actually is while reading or watching
+  }, { rootMargin: '-40% 0px -40% 0px', threshold: [0, 0.1, 0.3] });
 
   document.querySelectorAll('main img, main video').forEach(function (el) {
     observer.observe(el);
