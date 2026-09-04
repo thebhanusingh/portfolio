@@ -4,10 +4,14 @@
  *
  * Deliberately understated: this is NOT the cockpit easter egg's warp
  * effect (js/cockpit.js) — no streaks, no radial burst, nothing that
- * competes with reading a paragraph. Each star just twinkles (a slow
- * per-star opacity sine wave) and the whole field drifts a handful of
- * pixels over a couple of minutes, wrapping at the edges — enough to
- * read as "space," not enough to be a distraction on a page of prose.
+ * competes with reading a paragraph. What it IS is a real parallax
+ * field: every star carries a depth (0.25–1), and drifts sideways at a
+ * speed proportional to that depth — near stars (bigger, brighter) glide
+ * past noticeably faster than far ones (smaller, dimmer), the same
+ * near/far cue the cockpit's warp settles into, just slower and with no
+ * radial burst. Each star also twinkles independently on top of that
+ * drift. The combination is what actually reads as motion rather than a
+ * static field with a shimmer.
  *
  * Self-injecting: any page just needs `<script src=".../starfield.js">`,
  * no markup. Builds its own canvas and appends it as the first child of
@@ -29,9 +33,11 @@
   var raf = null;
   var startT = 0;
 
-  // whole-field drift: pixels per second, wraps at the edges
-  var DRIFT_X = 0.9;
-  var DRIFT_Y = 0.35;
+  // drift speed (px/sec) at depth=1 (nearest); each star's actual speed
+  // is this times its own depth, so near/far stars visibly separate
+  // instead of moving as one flat sheet
+  var DRIFT_X = 9;
+  var DRIFT_Y = 3;
 
   function sizeCanvas() {
     w = window.innerWidth;
@@ -48,11 +54,13 @@
     var count = Math.max(36, Math.min(90, Math.round((w * h) / 22000)));
     stars = [];
     for (var i = 0; i < count; i++) {
+      var depth = 0.25 + Math.random() * 0.75; // 0.25 (far) – 1 (near)
       stars.push({
-        x: Math.random() * w,
+        x: Math.random() * (w + 40) - 20,
         y: Math.random() * h,
-        r: 0.5 + Math.random() * 1.3,
-        baseAlpha: 0.25 + Math.random() * 0.45,
+        depth: depth,
+        r: 0.4 + depth * 1.4,
+        baseAlpha: (0.2 + depth * 0.5),
         period: 3 + Math.random() * 5,
         phase: Math.random() * Math.PI * 2,
         warm: Math.random() < 0.12
@@ -78,8 +86,9 @@
     ctx.clearRect(0, 0, w, h);
     for (var i = 0; i < stars.length; i++) {
       var s = stars[i];
-      var x = (s.x + sec * DRIFT_X) % (w + 20);
-      var y = (s.y + sec * DRIFT_Y) % (h + 20);
+      var span = w + 40;
+      var x = ((s.x + 20 + sec * DRIFT_X * s.depth) % span + span) % span - 20;
+      var y = ((s.y + sec * DRIFT_Y * s.depth) % (h + 20) + (h + 20)) % (h + 20);
       var alpha = s.baseAlpha * (0.55 + 0.45 * Math.sin(sec / s.period + s.phase));
       var color = s.warm ? '255, 214, 170' : '255, 255, 255';
       ctx.fillStyle = 'rgba(' + color + ', ' + Math.max(0, alpha) + ')';
