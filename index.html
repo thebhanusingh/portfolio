@@ -8,7 +8,7 @@
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230a0a0a'/%3E%3Ccircle cx='16' cy='17' r='6.5' fill='%23ffffff'/%3E%3C/svg%3E">
 <link rel="stylesheet" href="css/style.css">
 </head>
-<body>
+<body style="--page-hue:205;">
 <a class="skip-link" href="#main">Skip to content</a>
 
 <header class="site-nav">
@@ -33,7 +33,15 @@
       <h1>Bhanu Singh</h1>
       <p>I build worlds two ways — behind a game engine and behind a camera. MFA candidate in Game Design (ITGM) at SCAD, Unreal Engine artist, and virtual production generalist who has <span class="hl">cut cinematic shots for network television</span> and rendered his own ancestral home just to see it stand again.</p>
       <p>Most of what I do starts as a loose idea — a shot, a mechanic, a "what if this existed." Getting it on screen is really just problem-solving: the rig that has to move a certain way, the lighting setup that has to sell a mood, the pipeline that turns a sketch into something playable. That's the part I actually like.</p>
-      <a class="btn btn--gold" href="projects.html">See the work</a>
+      <div style="display:flex; align-items:center; gap: var(--space-3);">
+        <a class="btn btn--gold" href="projects.html">See the work</a>
+        <button type="button" id="cockpit-trigger" class="cockpit-trigger" aria-haspopup="dialog" aria-controls="cockpit-overlay" title="Engage">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M12 2 L14.4 9.5 L21 12 L14.4 14.5 L12 22 L9.6 14.5 L3 12 L9.6 9.5 Z"/>
+          </svg>
+          <span class="visually-hidden">Engage — fly toward the Pillars of Creation</span>
+        </button>
+      </div>
     </div>
   </section>
 
@@ -116,6 +124,51 @@
 
 </main>
 
+<!-- ============================================================
+     Easter egg: click the small jet icon next to "See the work" to
+     fly toward the Pillars of Creation. Real NASA/ESA/Hubble Heritage
+     Team image (public domain — assets/img/space/pillars-hero.jpg),
+     a warp-speed starfield on <canvas>, and a minimal F-22-style
+     canopy frame drawn in SVG. Runs once on open (warp-in, then
+     settles into a slow cruise) and respects prefers-reduced-motion
+     by skipping the intense warp entirely. See js/cockpit.js.
+     ============================================================ -->
+<div id="cockpit-overlay" class="cockpit-overlay" role="dialog" aria-modal="true" aria-label="Flying toward the Pillars of Creation" aria-hidden="true" tabindex="-1">
+  <div class="cockpit-scene">
+    <div class="cockpit-bg" style="background-image:url('assets/img/space/pillars-hero.jpg');" aria-hidden="true"></div>
+    <canvas id="cockpit-canvas" class="cockpit-canvas" aria-hidden="true"></canvas>
+    <div class="cockpit-vignette" aria-hidden="true"></div>
+
+    <!-- Four independently-stretching strips instead of one shared-viewBox
+         SVG — each maps its viewBox exactly onto its own edge with
+         preserveAspectRatio="none", so the side rails can't get cropped
+         away by "slice" scaling on tall/narrow viewports. -->
+    <div class="cockpit-frame" aria-hidden="true">
+      <svg class="cockpit-frame__piece cockpit-frame__top" viewBox="0 0 1600 90" preserveAspectRatio="none">
+        <path d="M330,0 C720,46 880,46 1270,0 L1270,26 C880,72 720,72 330,26 Z" fill="#0b0b0d" fill-opacity="0.95"/>
+      </svg>
+      <svg class="cockpit-frame__piece cockpit-frame__bottom" viewBox="0 0 1600 130" preserveAspectRatio="none">
+        <path d="M0,130 L0,58 C420,10 1180,10 1600,58 L1600,130 Z" fill="#0b0b0d" fill-opacity="0.95"/>
+        <path d="M0,58 C420,10 1180,10 1600,58" fill="none" stroke="#f2a83d" stroke-opacity="0.35" stroke-width="3"/>
+      </svg>
+      <svg class="cockpit-frame__piece cockpit-frame__left" viewBox="0 0 150 900" preserveAspectRatio="none">
+        <path d="M0,0 L150,64 C96,340 46,620 0,900 Z" fill="#0b0b0d" fill-opacity="0.95"/>
+        <path d="M0,0 L150,64 C96,340 46,620 0,900" fill="none" stroke="#f2a83d" stroke-opacity="0.28" stroke-width="3" vector-effect="non-scaling-stroke"/>
+      </svg>
+      <svg class="cockpit-frame__piece cockpit-frame__right" viewBox="0 0 150 900" preserveAspectRatio="none">
+        <path d="M150,0 L0,64 C54,340 104,620 150,900 Z" fill="#0b0b0d" fill-opacity="0.95"/>
+        <path d="M150,0 L0,64 C54,340 104,620 150,900" fill="none" stroke="#f2a83d" stroke-opacity="0.28" stroke-width="3" vector-effect="non-scaling-stroke"/>
+      </svg>
+    </div>
+  </div>
+
+  <button type="button" id="cockpit-close" class="cockpit-close" aria-label="Exit — return to the site">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><line x1="5" y1="5" x2="19" y2="19"/><line x1="19" y1="5" x2="5" y2="19"/></svg>
+  </button>
+
+  <p class="cockpit-credit">NASA, ESA &amp; the Hubble Heritage Team (STScI/AURA) — Pillars of Creation, Eagle Nebula</p>
+</div>
+
 <footer class="site-footer">
   <div class="wrap site-footer__row">
     <div class="site-footer__links">
@@ -131,5 +184,8 @@
 </footer>
 
 <script src="js/main.js"></script>
+<script src="js/starfield.js"></script>
+<script src="js/tilt.js"></script>
+<script src="js/cockpit.js"></script>
 </body>
 </html>

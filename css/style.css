@@ -1,9 +1,15 @@
 /* ============================================================
    Bhanu Singh — Portfolio
    Global styles: reset, tokens, typography, layout, components
-   Theme: dark editorial — near-black, bold grotesk type, warm
-   amber accent used deliberately for credentials/achievements.
-   References: hirotos.com (structure), vebhuv.com (color use)
+   Theme: dark editorial, space-motif — a soft per-page gradient
+   wash + ambient starfield sit behind everything (js/starfield.js).
+   Primary UI color is --accent (cool cyan-blue, pulled from the
+   Pillars of Creation nebula's background tone) — --gold survives
+   only for credential/achievement highlights (.hl, .tag--award)
+   and the cockpit easter egg's own warm nebula-lit chrome, so it
+   reads as an intentional accent rather than the site's whole
+   identity. References: hirotos.com (structure), vebhuv.com
+   (highlight-text habit).
    ============================================================ */
 
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap');
@@ -25,14 +31,25 @@
   --indigo: #d9d9d6;
   --indigo-deep: #ffffff;
 
-  /* accent — kept as --gold for compatibility with existing markup.
-     This is a real amber/gold now: used for buttons, links, active
-     nav, and to highlight credentials/achievements in running text. */
+  /* primary accent: cool cyan-blue, used for buttons, links, active
+     nav, focus rings — the site's actual identity color now. */
+  --accent: #5ec8ea;
+  --accent-dim: #3f9fc2;
+  --accent-ink: #04141a;
+
+  /* --gold survives ONLY for credential/achievement highlights
+     (.hl, .tag--award) and the cockpit easter egg's warm nebula-lit
+     chrome — kept deliberately rare so it still reads as a highlight,
+     not the site's whole identity. */
   --gold: #f2a83d;
   --gold-dim: #c6903f;
   --gold-ink: #1a1002;
 
   --danger: #f0654a;
+
+  /* per-page gradient hue (see body::before below) — overridden per
+     page via an inline style on <body>; this is just the fallback. */
+  --page-hue: 205;
 
   /* -- type: bold grotesk sans throughout -- */
   --font-display: 'Inter', -apple-system, 'Segoe UI', sans-serif;
@@ -78,6 +95,7 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
 input, textarea { font: inherit; color: inherit; }
 
 body {
+  position: relative;
   background-color: var(--bg);
   color: var(--fg);
   font-family: var(--font-body);
@@ -85,6 +103,25 @@ body {
   line-height: 1.55;
   min-height: 100dvh;
   -webkit-font-smoothing: antialiased;
+}
+
+/* Soft per-page gradient wash, fixed behind everything (js/starfield.js's
+   canvas sits between this and the page content, at z-index -1). Uses a
+   plain fixed pseudo-element rather than a fixed background-image on body
+   itself — background-attachment:fixed is a known jank/scroll-repaint
+   trap on mobile Safari, this isn't. --page-hue is set per page inline on
+   <body> (see each page's opening tag); the two radial blobs sit a fixed
+   ~50° apart on the hue wheel so every page gets a coherent two-tone
+   wash instead of a single flat color. */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -2;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse 90% 55% at 12% -8%, hsl(var(--page-hue) 70% 22% / 0.55), transparent 62%),
+    radial-gradient(ellipse 80% 60% at 105% 112%, hsl(calc(var(--page-hue) + 50) 62% 15% / 0.42), transparent 58%);
 }
 
 h1, h2, h3, h4 {
@@ -116,12 +153,12 @@ p + p { margin-top: var(--space-3); }
   font-size: 0.78rem;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: var(--gold);
+  color: var(--accent);
   display: inline-block;
 }
 
 :focus-visible {
-  outline: 2px solid var(--gold);
+  outline: 2px solid var(--accent);
   outline-offset: 3px;
   border-radius: 4px;
 }
@@ -138,8 +175,8 @@ p + p { margin-top: var(--space-3); }
   position: absolute;
   left: var(--space-3);
   top: -60px;
-  background: var(--gold);
-  color: var(--gold-ink);
+  background: var(--accent);
+  color: var(--accent-ink);
   padding: var(--space-2) var(--space-3);
   border-radius: var(--radius-sm);
   font-family: var(--font-body);
@@ -193,7 +230,7 @@ section { padding-block: var(--space-8); }
   gap: var(--space-1);
   color: var(--fg);
 }
-.site-nav__mark .dot { color: var(--gold); }
+.site-nav__mark .dot { color: var(--accent); }
 
 .site-nav__links {
   display: flex;
@@ -212,7 +249,7 @@ section { padding-block: var(--space-8); }
 }
 .site-nav__links a:hover,
 .site-nav__links a[aria-current="page"] {
-  color: var(--gold);
+  color: var(--accent);
 }
 .site-nav__links a[aria-current="page"] {
   font-weight: 700;
@@ -267,10 +304,10 @@ section { padding-block: var(--space-8); }
 .btn:hover { transform: translateY(-1px); }
 .btn:active { transform: translateY(0); }
 
-.btn--gold { background: var(--gold); color: var(--gold-ink); box-shadow: 0 6px 20px rgba(242, 168, 61, 0.22); }
-.btn--gold:hover { background: #ffb85a; }
+.btn--gold { background: var(--accent); color: var(--accent-ink); box-shadow: 0 6px 20px rgba(94, 200, 234, 0.25); }
+.btn--gold:hover { background: #85dbf5; }
 .btn--ghost { background: transparent; color: var(--fg); border-color: var(--border); }
-.btn--ghost:hover { border-color: var(--gold); color: var(--gold); }
+.btn--ghost:hover { border-color: var(--accent); color: var(--accent); }
 
 /* -------------------- cards -------------------- */
 .card {
@@ -283,7 +320,29 @@ section { padding-block: var(--space-8); }
 .card:hover {
   background: var(--card-hover);
   transform: translateY(-3px);
-  border-color: var(--gold-dim);
+  border-color: var(--accent-dim);
+}
+
+/* project cards: 3D hover-tilt. js/tilt.js tracks the cursor and writes
+   --rx/--ry/--tilt-scale; this is just the render side. Sits on top of the
+   plain .card hover above (background/border still apply), but replaces the
+   flat translateY with a perspective tilt that follows the mouse. */
+.project-card {
+  --rx: 0deg;
+  --ry: 0deg;
+  --tilt-scale: 1;
+  transform: perspective(900px) rotateX(var(--rx)) rotateY(var(--ry)) scale(var(--tilt-scale));
+  transition: transform 0.5s var(--ease-standard), background 0.2s var(--ease-standard), border-color 0.2s var(--ease-standard);
+  transform-style: preserve-3d;
+}
+.project-card:hover { transform: perspective(900px) rotateX(var(--rx)) rotateY(var(--ry)) scale(var(--tilt-scale)); }
+.project-card.is-tilting { transition: background 0.2s var(--ease-standard), border-color 0.2s var(--ease-standard); }
+.project-card .art-frame {
+  transition: transform 0.5s var(--ease-standard);
+  transform: translateZ(20px);
+}
+@media (prefers-reduced-motion: reduce) {
+  .project-card, .project-card .art-frame { transition: none !important; transform: none !important; }
 }
 
 .tag {
@@ -343,7 +402,7 @@ section { padding-block: var(--space-8); }
 
 .project-card__index {
   font-family: var(--font-mono);
-  color: var(--gold-dim);
+  color: var(--accent-dim);
   font-size: 0.78rem;
 }
 .project-card h3 { margin-top: var(--space-2); }
@@ -363,7 +422,7 @@ section { padding-block: var(--space-8); }
 }
 .site-footer__links { display: flex; gap: var(--space-4); font-weight: 500; font-size: 0.85rem; }
 .site-footer__links a { color: var(--muted); }
-.site-footer__links a:hover { color: var(--gold); }
+.site-footer__links a:hover { color: var(--accent); }
 .site-footer small { color: var(--muted-dim); font-family: var(--font-mono); font-size: 0.75rem; }
 
 /* -------------------- misc page header -------------------- */
@@ -403,7 +462,7 @@ section { padding-block: var(--space-8); }
   font-size: 0.9rem;
 }
 .prev-next a { color: var(--muted); }
-.prev-next a:hover { color: var(--gold); }
+.prev-next a:hover { color: var(--accent); }
 
 .contact-cta {
   display: flex;
@@ -483,6 +542,21 @@ section { padding-block: var(--space-8); }
 .hero__intro p { margin-top: var(--space-3); font-size: 1.1rem; }
 .hero__intro .btn { margin-top: var(--space-4); }
 
+/* -------------------- ambient starfield (site-wide, js/starfield.js) --------------------
+   Sits between the gradient wash (z-index -2, above) and real content
+   (default stacking, below). Self-injected by the script — no markup
+   needed per page beyond the <script> tag. */
+.starfield-canvas {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  display: block;
+}
+@media (prefers-reduced-motion: reduce) {
+  .starfield-canvas { opacity: 0.6; } /* script also skips the twinkle/drift loop and paints one static frame */
+}
+
 /* -------------------- back button (project/research detail pages) -------------------- */
 .back-btn {
   position: fixed;
@@ -492,8 +566,8 @@ section { padding-block: var(--space-8); }
   width: 44px;
   height: 44px;
   border-radius: 999px;
-  background: var(--gold);
-  color: var(--gold-ink);
+  background: var(--accent);
+  color: var(--accent-ink);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -501,3 +575,108 @@ section { padding-block: var(--space-8); }
 }
 .back-btn:hover { transform: scale(1.06); }
 .back-btn svg { width: 18px; height: 18px; }
+
+/* -------------------- cockpit easter egg (home hero) -------------------- */
+.cockpit-trigger {
+  width: 46px;
+  height: 46px;
+  min-width: 46px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--bg-soft);
+  color: var(--muted-dim);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.2s var(--ease-standard), border-color 0.2s var(--ease-standard), transform 0.2s var(--ease-standard);
+}
+.cockpit-trigger svg { width: 20px; height: 20px; }
+.cockpit-trigger:hover, .cockpit-trigger:focus-visible {
+  color: var(--accent);
+  border-color: var(--accent-dim);
+  transform: rotate(90deg);
+}
+
+.cockpit-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  background: #000;
+  transition: opacity 0.5s var(--ease-standard), visibility 0s linear 0.5s;
+}
+.cockpit-overlay.is-open {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transition: opacity 0.5s var(--ease-standard);
+}
+
+.cockpit-scene {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+.cockpit-bg {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center 40%;
+  transform-origin: center;
+  animation: cockpit-drift 46s ease-in-out infinite alternate;
+}
+@keyframes cockpit-drift {
+  from { transform: scale(1); }
+  to { transform: scale(1.12); }
+}
+.cockpit-canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.cockpit-vignette {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(ellipse at 50% 45%, transparent 32%, rgba(0,0,0,0.6) 100%);
+}
+.cockpit-frame { position: absolute; inset: 0; pointer-events: none; }
+.cockpit-frame__piece { position: absolute; display: block; }
+.cockpit-frame__top { top: 0; left: 0; right: 0; width: 100%; height: clamp(50px, 8vh, 90px); }
+.cockpit-frame__bottom { bottom: 0; left: 0; right: 0; width: 100%; height: clamp(70px, 13vh, 130px); }
+.cockpit-frame__left { top: 0; bottom: 0; left: 0; height: 100%; width: clamp(60px, 9vw, 150px); }
+.cockpit-frame__right { top: 0; bottom: 0; right: 0; height: 100%; width: clamp(60px, 9vw, 150px); }
+
+.cockpit-close {
+  position: absolute;
+  top: var(--space-4);
+  right: var(--space-4);
+  z-index: 5;
+  width: 44px;
+  height: 44px;
+  border-radius: 999px;
+  background: rgba(11, 11, 13, 0.7);
+  border: 1px solid rgba(242, 168, 61, 0.35);
+  color: var(--fg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(6px);
+  transition: transform 0.15s var(--ease-standard), border-color 0.15s var(--ease-standard);
+}
+.cockpit-close:hover, .cockpit-close:focus-visible { border-color: var(--gold); transform: scale(1.06); }
+.cockpit-close svg { width: 18px; height: 18px; }
+
+.cockpit-credit {
+  position: absolute;
+  left: var(--space-4);
+  bottom: var(--space-3);
+  z-index: 5;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  color: rgba(245, 245, 243, 0.55);
+  text-shadow: 0 1px 3px rgba(0,0,0,0.6);
+  margin: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cockpit-overlay { transition: none; }
+}
