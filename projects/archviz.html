@@ -37,27 +37,38 @@
 
   <div class="wrap">
     <div class="media-item">
-      <img src="../assets/img/archviz/archviz-01.jpg" alt="Ancestral home ArchViz, floor plan reference" loading="eager">
+      <img src="../assets/img/archviz/archviz-01.jpg" alt="Ancestral home ArchViz, bedroom interior render in Unreal Engine" loading="eager">
     </div>
 
     <div class="prose" style="margin-top: var(--space-6);">
       <p>This project remakes my ancestral home based on the plan produced by the architect handling its renovation. I added interior elements on top of the base plan to make the project feel lived-in rather than just structural.</p>
       <p>The house was originally built in the early 1930s, so the renovation called for an updated floor plan. Once I'd redone the floor map, I brought it into Blender as a base for the 3D model. The first task was calibration — scaling the reference image so its printed scale matched Blender's units exactly. With that locked in, I rebuilt the house in 3D and imported the model into Unreal Engine for lighting and set dressing.</p>
 
-      <div class="media-gallery" id="archviz-gallery"></div>
-      <script>
-        (function () {
-          var gallery = document.getElementById('archviz-gallery');
-          for (var i = 2; i <= 24; i++) {
-            var n = String(i).padStart(2, '0');
-            var item = document.createElement('div');
-            item.className = 'media-item';
-            if (i % 5 === 0) item.className += ' media-item--span2';
-            item.innerHTML = '<img src="../assets/img/archviz/archviz-' + n + '.png" alt="Ancestral home ArchViz, Unreal Engine render" loading="lazy">';
-            gallery.appendChild(item);
-          }
-        })();
-      </script>
+      <div class="media-gallery" id="archviz-gallery">
+        <div class="media-item"><img src="../assets/img/archviz/archviz-02.jpg" alt="Ancestral home ArchViz, living area with a wall-mounted TV in low light" loading="lazy"></div>
+        <div class="media-item"><img src="../assets/img/archviz/archviz-03.jpg" alt="Ancestral home ArchViz, hallway with wooden floorboards and a high window" loading="lazy"></div>
+        <div class="media-item"><img src="../assets/img/archviz/archviz-04.jpg" alt="Ancestral home ArchViz, sitting room doorway and patterned rug" loading="lazy"></div>
+        <div class="media-item media-item--span2"><img src="../assets/img/archviz/archviz-05.jpg" alt="Ancestral home ArchViz, kitchen counter with under-cabinet lighting" loading="lazy"></div>
+        <div class="media-item"><img src="../assets/img/archviz/archviz-06.jpg" alt="Ancestral home ArchViz, framed botanical prints and plants lit by desk lamps" loading="lazy"></div>
+        <div class="media-item"><img src="../assets/img/archviz/archviz-07.jpg" alt="Ancestral home ArchViz, living room with shelving, looking into the next room" loading="lazy"></div>
+        <div class="media-item"><img src="../assets/img/archviz/archviz-08.jpg" alt="Ancestral home ArchViz, wooden double doors with glass panes" loading="lazy"></div>
+        <div class="media-item"><img src="../assets/img/archviz/archviz-09.jpg" alt="Ancestral home ArchViz, sideboard with framed art above a patterned rug" loading="lazy"></div>
+        <div class="media-item media-item--span2"><img src="../assets/img/archviz/archviz-10.jpg" alt="Ancestral home ArchViz, armchair corner with a lamp and a potted plant" loading="lazy"></div>
+        <div class="media-item"><img src="../assets/img/archviz/archviz-11.jpg" alt="Ancestral home ArchViz, framed monstera print above wood paneling" loading="lazy"></div>
+        <div class="media-item"><img src="../assets/img/archviz/archviz-12.jpg" alt="Ancestral home ArchViz, living room with sofa, round coffee table and TV" loading="lazy"></div>
+        <div class="media-item"><img src="../assets/img/archviz/archviz-13.jpg" alt="Ancestral home ArchViz, doorway into a hallway with wood wainscoting" loading="lazy"></div>
+        <div class="media-item"><img src="../assets/img/archviz/archviz-14.jpg" alt="Ancestral home ArchViz, bathroom with dark tile and a floating vanity" loading="lazy"></div>
+        <div class="media-item media-item--span2"><img src="../assets/img/archviz/archviz-15.jpg" alt="Ancestral home ArchViz, brass vase on a glossy surface, detail shot" loading="lazy"></div>
+        <div class="media-item"><img src="../assets/img/archviz/archviz-16.jpg" alt="Ancestral home ArchViz, renovation floor plan used as the modeling reference" loading="lazy"></div>
+        <div class="media-item"><img src="../assets/img/archviz/archviz-17.jpg" alt="Ancestral home ArchViz, Blender blockout of the ground-floor walls over the calibrated floor plan" loading="lazy"></div>
+        <div class="media-item"><img src="../assets/img/archviz/archviz-18.jpg" alt="Ancestral home ArchViz, front exterior with columned porch and garden" loading="lazy"></div>
+        <div class="media-item"><img src="../assets/img/archviz/archviz-19.jpg" alt="Ancestral home ArchViz, wider front view with steps and hedges" loading="lazy"></div>
+        <div class="media-item media-item--span2"><img src="../assets/img/archviz/archviz-20.jpg" alt="Ancestral home ArchViz, three-quarter exterior view with courtyard seating" loading="lazy"></div>
+        <div class="media-item"><img src="../assets/img/archviz/archviz-21.jpg" alt="Ancestral home ArchViz, porch seating under the columns" loading="lazy"></div>
+        <div class="media-item"><img src="../assets/img/archviz/archviz-22.jpg" alt="Ancestral home ArchViz, side view of the porch columns and carved window surrounds" loading="lazy"></div>
+        <div class="media-item"><img src="../assets/img/archviz/archviz-23.jpg" alt="Ancestral home ArchViz, looking into the porch toward the front door" loading="lazy"></div>
+        <div class="media-item"><img src="../assets/img/archviz/archviz-24.jpg" alt="Ancestral home ArchViz, front steps and porch columns" loading="lazy"></div>
+      </div>
     </div>
 
     <div class="prev-next" style="margin-top: var(--space-7);">
