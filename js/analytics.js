@@ -21,7 +21,7 @@
  * browser console.
  */
 (function () {
-  var UMAMI_WEBSITE_ID = '';
+  var UMAMI_WEBSITE_ID = 'e9b51473-7573-40e4-8e49-843d59a625f9';
   var UMAMI_SRC = 'https://cloud.umami.is/script.js';
   // Comma-separated hostnames to record, e.g. 'bhanusingh.com,www.bhanusingh.com'.
   // Empty = any host except localhost.
