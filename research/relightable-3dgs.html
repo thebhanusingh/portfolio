@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>From Capture to Cut — Bhanu Singh</title>
-<meta name="description" content="Ongoing MFA thesis: a relightable 3D Gaussian Splatting pipeline for virtual production on LED volume stages. Sprint 1 of 3.">
+<meta name="description" content="Ongoing MFA thesis: a relightable 3D Gaussian Splatting pipeline for virtual production on LED volume stages. Latest: a Thesis II sprint turning phone video into an aligned, measured splat and testing BRDF relighting.">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230a0a0a'/%3E%3Ccircle cx='16' cy='17' r='6.5' fill='%23ffffff'/%3E%3C/svg%3E">
 <link rel="stylesheet" href="../css/style.css">
 </head>
@@ -27,15 +27,104 @@
 
 <main id="main">
   <div class="wrap page-header">
-    <span class="eyebrow">00 / MFA Thesis — ITGM 755 · Ongoing, Sprint 1 of 3</span>
+    <span class="eyebrow">00 / MFA Thesis · Ongoing — Thesis II</span>
     <h1>From Capture to Cut</h1>
     <p>A relightable 3D Gaussian Splatting pipeline for virtual production on LED volume stages. Standard 3DGS captures bake in the lighting at time of capture — a Director of Photography can't change the sun angle or drop in a practical without the whole environment looking wrong. This thesis builds and tests a pipeline that separates lighting from geometry, so a captured location stays relightable on stage.</p>
     <div class="tool-list">
-      <span class="tag">3D Gaussian Splatting</span><span class="tag">Unreal Engine 5.5</span><span class="tag">COLMAP</span><span class="tag">BRDF Decomposition</span><span class="tag">Volinga Plugin Pro</span>
+      <span class="tag">3D Gaussian Splatting</span><span class="tag">Unreal Engine 5.5</span><span class="tag">COLMAP</span><span class="tag">BRDF Decomposition</span><span class="tag">Volinga Plugin Pro</span><span class="tag">nerfstudio</span><span class="tag">GaussianShader</span>
     </div>
     <div class="contact-cta">
-      <a class="btn btn--gold" href="../assets/research/relightable-3dgs-sprint1.docx">Download full Sprint 1 documentation</a>
+      <a class="btn btn--gold" href="../assets/research/relightable-3dgs-thesis2-refine-direction.docx">Download Thesis II sprint documentation</a>
+      <a class="btn btn--ghost" href="../assets/research/relightable-3dgs-sprint1.docx">Download Sprint 1 documentation</a>
     </div>
+  </div>
+
+  <div class="wrap">
+    <span class="eyebrow">Latest · Thesis II sprint · September 23–29, 2026</span>
+    <h2 style="margin-top: var(--space-2);">From phone video to a relightable splat</h2>
+    <p style="color: var(--muted); max-width: 68ch; margin-top: var(--space-3);">Every relighting method depends on the splat underneath it. If the splat is blurry, trained on the wrong frames, or sitting in the wrong coordinate space, no amount of relighting will fix it. So this sprint moved to the capture end of the pipeline: turn a single iPhone video into a sharp, correctly aligned Gaussian splat on my 8 GB laptop, then run a first relighting experiment to find where the real difficulty lies before committing to Method A.</p>
+
+    <figure class="media-item" style="margin-top: var(--space-5);">
+      <img src="../assets/research/img/thesis/sprint2-best-heldout.jpg" alt="Side by side: a real video frame of a blue and a red Adirondack chair on grass by a fence, and the Gaussian splat rendered from the same camera" loading="lazy">
+      <figcaption>Best held-out view. Left: a real video frame the model never saw during training. Right: the splat rendered from the same camera (23.4 dB PSNR).</figcaption>
+    </figure>
+
+    <div class="stat-row">
+      <div><span class="eyebrow">Most detailed splat</span>2.89M Gaussians, full resolution, on the laptop</div>
+      <div><span class="eyebrow">Accuracy on unseen views</span>21.2 and 22.5 dB median PSNR across two scenes</div>
+      <div><span class="eyebrow">Alignment to tracking</span>0.058 units median error in a scene 5–7 units across</div>
+      <div><span class="eyebrow">Training on 8 GB</span>GPU memory 7.2 → 6.1 GB, step time 562 → 144 ms</div>
+    </div>
+
+    <h3 style="margin-top: var(--space-7);">One command, with guardrails</h3>
+    <p style="color: var(--muted); max-width: 68ch; margin-top: var(--space-3);">The pipeline picks the sharpest frame in each window instead of evenly spaced ones, solves the cameras in COLMAP, trains at full resolution (nerfstudio quietly shrinks images to 1600 px by default), and keeps COLMAP's coordinates so the splat lines up with the tracking data Unreal will use. The bigger risk turned out to be silent failure, not crashes: COLMAP once split a scene in two and nerfstudio trained on the piece with 2 of 659 frames, printing only a warning. The pipeline now uses the complete camera solve, checks the frame count, and stops the moment any step fails.</p>
+    <figure class="media-item" style="margin-top: var(--space-4);">
+      <img src="../assets/research/img/thesis/sprint2-pipeline.png" alt="Pipeline diagram: iPhone video, sharp frames, COLMAP, model fix, train splat, export; a relightable test branches off after the camera solve" loading="lazy">
+      <figcaption>The capture-to-splat pipeline built this sprint. Blue outlines are the new guardrail steps; the relightable test branches off after the camera solve.</figcaption>
+    </figure>
+
+    <h3 style="margin-top: var(--space-7);">How close is the splat to reality?</h3>
+    <p style="color: var(--muted); max-width: 68ch; margin-top: var(--space-3);">I compared renders against held-out frames: real video frames set aside and never used in training, so the splat has to predict what the camera saw. The first comparison scored about 15 dB and looked like a failure, but the test was wrong, not the splat: the real frames still had phone lens distortion and the renders didn't, leaving the corners about 12 pixels apart. With the same correction applied to both, the medians came out at 21.2 dB (IMG_6556) and 22.5 dB (IMG_6557). Grass and leaves score low even when they look right, because every blade is a tiny, slightly shifted detail.</p>
+    <div class="media-gallery media-gallery--wide" style="margin-top: var(--space-4);">
+      <figure class="media-item">
+        <img src="../assets/research/img/thesis/sprint2-median-chair.jpg" alt="Real frame and splat render of the blue chair on grass, side by side" loading="lazy">
+        <figcaption>Median held-out view, IMG_6556 (21.2 dB). Chair shape, slats, cast shadow and fence grain all carry through; the grass is slightly softer than the real frame.</figcaption>
+      </figure>
+      <figure class="media-item">
+        <img src="../assets/research/img/thesis/sprint2-median-sheds.jpg" alt="Real frame and splat render of a backyard with sheds, a fence and a tree, side by side" loading="lazy">
+        <figcaption>Median held-out view, IMG_6557 (22.5 dB). Sheds, siding, fence and the shadow edge on the lawn are in place; small softness in the distant trees and sky.</figcaption>
+      </figure>
+      <figure class="media-item">
+        <img src="../assets/research/img/thesis/sprint2-hardest-foliage.jpg" alt="Real frame and splat render of dense palm fronds and pine straw, side by side" loading="lazy">
+        <figcaption>Hardest held-out view, IMG_6557 (20.0 dB). Dense palm fronds and pine straw are the toughest material for a splat, yet the overall structure holds.</figcaption>
+      </figure>
+    </div>
+
+    <h3 style="margin-top: var(--space-7);">Same scene, bigger GPU</h3>
+    <p style="color: var(--muted); max-width: 68ch; margin-top: var(--space-3);">To see how much the 8 GB limit was holding quality back, I retrained IMG_6557 on the school workstation (RTX PRO 6000, 96 GB). The larger model ran uncapped for 60,000 steps and grew to 4.15 million Gaussians, almost three times the laptop's 1.45 million. By eye it is clearly sharper, yet it scored 3 to 5 dB <em>lower</em>. Training also refines the camera positions while held-out frames keep the originals, so a sharp render can sit a pixel or two off, and PSNR rewards blur that averages the shift away. I wrote an evaluation script that corrects lens distortion and adds a small alignment step before scoring; it lifts the laptop median from 22.7 to 24.7 dB. Running it on the workstation splat is next, so both are measured on equal terms.</p>
+    <div class="media-gallery media-gallery--wide" style="margin-top: var(--space-4);">
+      <figure class="media-item">
+        <img src="../assets/research/img/thesis/sprint2-laptop-vs-school-foliage.jpg" alt="Three-way comparison with 2x zoom crops of palm fronds: original frame, laptop splat, and workstation splat" loading="lazy">
+        <figcaption>Foliage: original vs. laptop (1.45M Gaussians, 20.0 dB) vs. workstation (4.15M Gaussians, 16.1 dB). The workstation splat recovers far more leaf and frond detail despite the lower score.</figcaption>
+      </figure>
+      <figure class="media-item">
+        <img src="../assets/research/img/thesis/sprint2-laptop-vs-school-pinestraw.jpg" alt="Three-way comparison with 2x zoom crops of pine straw on the ground: original frame, laptop splat, and workstation splat" loading="lazy">
+        <figcaption>Pine straw: the laptop render blurs the needles together; the workstation render keeps the needles and the pine cone. Laptop 24.5 dB, workstation 19.7 dB — the sharper image scores lower.</figcaption>
+      </figure>
+    </div>
+
+    <h3 style="margin-top: var(--space-7);">The relighting test</h3>
+    <p style="color: var(--muted); max-width: 68ch; margin-top: var(--space-3);">I trained GaussianShader, a published relightable splat method, on IMG_6556 (PSNR 25.06, overnight at half resolution) and wrote a render script that swaps its learned lighting for a studio HDR and a sunset HDR. With its own lighting the render matched the footage closely. Under new light, though, only the reflections moved: splitting one frame into its parts, the specular value rose from 0.179 to 0.439 while the diffuse value stayed at exactly 0.441. The sun and the cast shadows stay baked in.</p>
+    <div class="media-gallery" style="margin-top: var(--space-4);">
+      <figure class="media-item">
+        <img src="../assets/research/img/thesis/sprint2-relight-side.jpg" alt="Four panels of the blue chair from the side: original frame, learned lighting, raw studio HDR with purple haze on the grass, and exposure-matched studio HDR" loading="lazy">
+        <figcaption>Side view. The raw studio HDR washes the grass out with purple haze; the exposure-matched HDR is clean but barely changes, and the chair's shadow doesn't move.</figcaption>
+      </figure>
+      <figure class="media-item">
+        <img src="../assets/research/img/thesis/sprint2-relight-front.jpg" alt="Four panels of both chairs from the front: original frame, learned lighting, raw studio HDR with cloudy streaks, and exposure-matched studio HDR" loading="lazy">
+        <figcaption>Front view. Raw HDR scatters reflected light into cloudy streaks through noisy grass normals; the matched HDR changes very little.</figcaption>
+      </figure>
+    </div>
+    <p class="video-note" style="margin-top: var(--space-4);">Key finding: a BRDF method built for shiny objects does not truly relight an outdoor diffuse scene. That is concrete evidence for the zero-shadow normalization pass — the thesis's proposed contribution.</p>
+
+    <h3 style="margin-top: var(--space-7);">Working inside 8 GB</h3>
+    <p style="color: var(--muted); max-width: 68ch; margin-top: var(--space-3);">The large model filled the laptop's 8 GB of video memory before step 15,000, and 650 full-resolution frames used 10 to 11.6 GB of its 15.5 GB of system memory. Caching frames in system memory, stopping point growth at step 10,000 and resuming from a checkpoint made the laptop run fit and train about four times faster; limiting point growth let GaussianShader finish overnight at about 3.1 GB.</p>
+    <figure class="media-item" style="max-width: 760px; margin-top: var(--space-4);">
+      <img src="../assets/research/img/thesis/sprint2-gpu-memory.png" alt="Line chart of GPU memory against training step: splatfacto-big and default GaussianShader climb toward the 8 GB limit; GaussianShader with limited point growth stays flat near 3.1 GB" loading="lazy">
+      <figcaption>GPU memory during training. Both uncapped runs headed for the 8 GB limit; limiting point growth kept GaussianShader at about 3.1 GB for the whole run.</figcaption>
+    </figure>
+
+    <h3 style="margin-top: var(--space-7);">What changes next</h3>
+    <div class="decision-list">
+      <div><span class="eyebrow">Continue</span><p>The high-quality pipeline for every scene, and the held-out comparison as the quality baseline every relighting method has to keep.</p></div>
+      <div><span class="eyebrow">Change</span><p>Full-scale training moves to the school workstation, every scene is scored with the alignment-corrected evaluation, and relighting tests move from GaussianShader to methods that relight the diffuse part too: R3DGS (Method A), with GS-IR as an alternative.</p></div>
+      <div><span class="eyebrow">Expand</span><p>Develop the zero-shadow normalization pass, test captures in even, overcast light, and bring an exported splat into UE5 to start the Method B mesh-proxy comparison.</p></div>
+      <div><span class="eyebrow">Remove</span><p>GaussianShader as a candidate for the final method.</p></div>
+    </div>
+
+    <p style="color: var(--muted); max-width: 68ch; margin-top: var(--space-5);">A note on process: I ran most of this sprint from school, directing an AI coding agent (Claude Code) on my home laptop through remote control. It handled installs, scripts and monitoring, and logged its own mistakes in a shared lab notebook; I supplied the direction and domain knowledge it lacked. Checking outputs — frame counts, memory trends, renders against real footage — caught problems the logs did not.</p>
+
+    <span class="eyebrow" style="display:block; margin-top: var(--space-8);">Sprint 1 · Thesis I</span>
   </div>
 
   <div class="wrap">
@@ -93,7 +182,7 @@
 
     <p class="video-note" style="margin-top: var(--space-4);">The interview also surfaced shadow direction as the single highest-priority signal of environmental consistency — it's now the highest-weighted criterion in the five-point practitioner rubric.</p>
 
-    <h2 style="margin-top: var(--space-7);">Where it stands</h2>
+    <h2 style="margin-top: var(--space-7);">Where Sprint 1 left it</h2>
     <p style="color: var(--muted); max-width: 68ch;">Sprint 1 proves the pipeline runs end-to-end on a real SCAD location and confirms the research gap: nobody publishing on 3DGS relighting — academic or commercial — strips baked directional lighting before mesh extraction. Thesis 2 adds a second capture location (the Bull Street exterior, with its glass shopfront problem), performance optimization to get Method A over the 60fps line, and a full 3–5 practitioner evaluation round on SCAD's actual LED volume stage.</p>
 
     <div class="prev-next" style="margin-top: var(--space-7);">
