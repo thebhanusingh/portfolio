@@ -910,3 +910,39 @@ section { padding-block: var(--space-8); }
 .splat-viewer:not([data-state="ready"]) .splat-viewer__actions { display: none; }
 .splat-viewer:fullscreen { display: flex; flex-direction: column; border-radius: 0; border: 0; }
 .splat-viewer:fullscreen .splat-viewer__stage { flex: 1; aspect-ratio: auto; }
+
+/* -------------------- process / criteria / open-source (Captured Spaces) -------------------- */
+.process-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: var(--space-4);
+  margin-top: var(--space-4);
+}
+.process-list li { border-top: 1px solid var(--border); padding-top: var(--space-2); }
+.process-list .eyebrow { display: block; margin-bottom: var(--space-1); }
+.process-list p { font-size: 0.95rem; }
+.criteria-list > div { grid-template-columns: 10rem 1fr; }
+@media (max-width: 520px) { .criteria-list > div { grid-template-columns: 1fr; } }
+.criteria-list strong { color: var(--fg); font-weight: 600; }
+.criteria-list__caught { display: inline-block; margin-top: var(--space-1); color: var(--muted-dim); font-size: 0.92rem; }
+.oss-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: var(--space-3);
+  margin-top: var(--space-4);
+}
+.oss-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  padding: var(--space-3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--card);
+  transition: border-color 0.15s var(--ease-standard), background 0.15s var(--ease-standard);
+}
+.oss-card:hover { border-color: var(--accent-dim); background: var(--card-hover); }
+.oss-card__name { font-weight: 700; color: var(--fg); }
+.oss-card__role { font-size: 0.88rem; color: var(--muted); }
+.oss-card__license { align-self: flex-start; margin-top: auto; }
+.oss-card__note { font-size: 0.8rem; color: var(--gold-dim); margin: 0; }

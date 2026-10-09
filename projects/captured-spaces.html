@@ -31,7 +31,7 @@
     <h1>Captured Spaces</h1>
     <p>Real spaces captured on a phone and turned into Gaussian splats you can move around in, right in the browser: an office interior and a backyard exterior, both from my own capture-to-splat pipeline.</p>
     <div class="tool-list">
-      <span class="tag">Gaussian Splatting</span><span class="tag">nerfstudio</span><span class="tag">COLMAP</span><span class="tag">hloc</span><span class="tag">PlayCanvas</span>
+      <span class="tag">Gaussian Splatting</span><span class="tag">nerfstudio</span><span class="tag">COLMAP</span><span class="tag">hloc</span><span class="tag">PlayCanvas</span><span class="tag">Open source</span>
     </div>
   </div>
 
@@ -80,14 +80,96 @@
       </div>
     </div>
 
-    <h2 style="margin-top: var(--space-7);">How they're made</h2>
-    <div class="decision-list">
-      <div><span class="eyebrow">Capture</span><p>A slow handheld phone video, walking around the space.</p></div>
-      <div><span class="eyebrow">Frames</span><p>The sharpest frame in each short window, measured by blur, rather than evenly spaced frames.</p></div>
-      <div><span class="eyebrow">Camera solve</span><p>COLMAP, or hloc for low-texture interiors, with a check that stops training if only part of the video was solved.</p></div>
-      <div><span class="eyebrow">Training</span><p>nerfstudio splatfacto-big at full resolution, kept in the camera solve's own coordinates so the splat lines up with the tracking data.</p></div>
-      <div><span class="eyebrow">Web</span><p>Cleaned up, compressed to PlayCanvas SOG, and shown here with the PlayCanvas engine.</p></div>
+    <h2 style="margin-top: var(--space-7);">The process</h2>
+    <p style="color: var(--muted); max-width: 68ch; margin-top: var(--space-3);">One command takes a video, a scene name, a frame count and a step count, runs every stage below, and stops the moment any stage fails, so one bad run can't roll into the next.</p>
+    <ol class="process-list">
+      <li><span class="eyebrow">01 · Capture</span><p>A slow handheld phone video, walking around the space. Keep furniture or an edge in frame: every stretch of bare wall or ceiling is a stretch the solver can't place.</p></li>
+      <li><span class="eyebrow">02 · Frame selection</span><p>Split the video into 650 to 1,000 windows and keep the sharpest frame in each, scored by the variance of the Laplacian, instead of evenly spaced frames. Motion blur was the main cause of soft detail.</p></li>
+      <li><span class="eyebrow">03 · Camera solve</span><p>COLMAP structure-from-motion. For low-texture interiors, hloc instead: SuperPoint features matched with LightGlue, NetVLAD retrieval to choose pairs, and pycolmap to build the model.</p></li>
+      <li><span class="eyebrow">04 · Pose repair</span><p>My own step: keep the largest sub-model, bundle-adjust it with principal-point refinement, and keep COLMAP's world coordinates so the splat lines up with the tracking data an Unreal or LED-stage scene will use.</p></li>
+      <li><span class="eyebrow">05 · Training</span><p>nerfstudio splatfacto-big at full resolution with camera-pose refinement. Point growth is capped so it fits an 8 GB GPU; the interior also uses antialiased rendering and scale regularization for its blank walls.</p></li>
+      <li><span class="eyebrow">06 · Clean-up and web</span><p>Crop to the 1st–99th percentile box of opaque splats plus 10%, run a floater filter, rotate upright, and compress to PlayCanvas SOG: about 320 MB down to 19 MB for the office.</p></li>
+    </ol>
+
+    <h2 style="margin-top: var(--space-7);">Test criteria</h2>
+    <p style="color: var(--muted); max-width: 68ch; margin-top: var(--space-3);">The bigger risk in this pipeline turned out to be silent failure, not crashes: standard tools can print a warning and keep going. These checks run on every scene, and each one exists because it caught a real problem.</p>
+    <div class="decision-list criteria-list">
+      <div><span class="eyebrow">Pose coverage</span><p><strong>Pass:</strong> at least 80% of frames posed in one model, or the pipeline stops before training.<br><span class="criteria-list__caught">Caught: the office solved only 72% with COLMAP. Switching to hloc reached 98%.</span></p></div>
+      <div><span class="eyebrow">Frame count</span><p><strong>Pass:</strong> the frames with camera poses match the frames extracted.<br><span class="criteria-list__caught">Caught: a run that was about to train on 2 of 659 frames after COLMAP split the scene.</span></p></div>
+      <div><span class="eyebrow">Alignment</span><p><strong>Pass:</strong> splat points sit on the camera-tracking points.<br><span class="criteria-list__caught">Measured: median distance of 0.058 units in a scene about 5–7 units across.</span></p></div>
+      <div><span class="eyebrow">Held-out accuracy</span><p><strong>Pass:</strong> render frames the model never trained on, apply the same lens correction and a small alignment step, then compare with PSNR and zoomed crops. Never PSNR alone.<br><span class="criteria-list__caught">Measured: 21.2 and 22.5 dB medians on two outdoor scenes. The sharper workstation splat scored lower until the alignment step, because PSNR rewards blur.</span></p></div>
+      <div><span class="eyebrow">Resources</span><p><strong>Pass:</strong> GPU and system memory trends stay below set limits (an alert at 7.2 of 8 GB GPU), with crash and slowdown alerts while training runs.<br><span class="criteria-list__caught">Caught: the large model heading for the 8 GB ceiling, and a run that would have exhausted system memory.</span></p></div>
+      <div><span class="eyebrow">Reproducibility</span><p><strong>Pass:</strong> the setup rebuilds on a second machine from the notes alone.<br><span class="criteria-list__caught">Caught: a COLMAP update had renamed an option nerfstudio still used. Versions are now pinned.</span></p></div>
+      <div><span class="eyebrow">Web delivery</span><p><strong>Pass:</strong> under 30 MB, reads back as a valid SOG with the expected splat count, and renders upright.<br><span class="criteria-list__caught">Result: 19 MB office (1.24M splats), 27 MB backyard (2.3M splats).</span></p></div>
     </div>
+
+    <h2 style="margin-top: var(--space-7);">Built on open source</h2>
+    <p style="color: var(--muted); max-width: 68ch; margin-top: var(--space-3);">I built this pipeline by connecting open-source tools, with Claude Code as my coding agent, and wrote the glue myself: the sharp-frame selector, the pose-repair step, the end-to-end run script, and the checks above. The method is 3D Gaussian Splatting (<a class="text-link" href="https://repo-sam.inria.fr/fungraph/3d-gaussian-splatting/" target="_blank" rel="noopener">Kerbl et al., 2023</a>); training uses nerfstudio's own Apache-licensed implementation, not the original research code.</p>
+    <div class="oss-grid">
+        <a class="oss-card" href="https://ffmpeg.org" target="_blank" rel="noopener">
+          <span class="oss-card__name">FFmpeg</span>
+          <span class="oss-card__role">Decodes the phone video into frames</span>
+          <span class="tag oss-card__license">LGPL / GPL</span>
+        </a>
+        <a class="oss-card" href="https://github.com/opencv/opencv" target="_blank" rel="noopener">
+          <span class="oss-card__name">OpenCV + NumPy</span>
+          <span class="oss-card__role">Scores every frame for blur (variance of the Laplacian)</span>
+          <span class="tag oss-card__license">Apache-2.0 / BSD</span>
+        </a>
+        <a class="oss-card" href="https://github.com/colmap/colmap" target="_blank" rel="noopener">
+          <span class="oss-card__name">COLMAP</span>
+          <span class="oss-card__role">Structure-from-motion: solves where the camera was for each frame</span>
+          <span class="tag oss-card__license">BSD</span>
+        </a>
+        <a class="oss-card" href="https://github.com/cvg/Hierarchical-Localization" target="_blank" rel="noopener">
+          <span class="oss-card__name">hloc</span>
+          <span class="oss-card__role">Learned-feature camera solve for low-texture interiors, with pycolmap mapping</span>
+          <span class="tag oss-card__license">Apache-2.0</span>
+        </a>
+        <a class="oss-card" href="https://github.com/cvg/LightGlue" target="_blank" rel="noopener">
+          <span class="oss-card__name">LightGlue</span>
+          <span class="oss-card__role">Matches features between frames inside hloc</span>
+          <span class="tag oss-card__license">Apache-2.0</span>
+        </a>
+        <a class="oss-card" href="https://github.com/magicleap/SuperPointPretrainedNetwork" target="_blank" rel="noopener">
+          <span class="oss-card__name">SuperPoint</span>
+          <span class="oss-card__role">Keypoint detector used by hloc</span>
+          <span class="tag oss-card__license">Research-only weights</span><p class="oss-card__note">Not open source: Magic Leap licenses the weights for non-commercial research.</p>
+        </a>
+        <a class="oss-card" href="https://github.com/Relja/netvlad" target="_blank" rel="noopener">
+          <span class="oss-card__name">NetVLAD</span>
+          <span class="oss-card__role">Image retrieval to pick which frames to match</span>
+          <span class="tag oss-card__license">MIT</span>
+        </a>
+        <a class="oss-card" href="https://github.com/nerfstudio-project/nerfstudio" target="_blank" rel="noopener">
+          <span class="oss-card__name">nerfstudio</span>
+          <span class="oss-card__role">Data processing, splatfacto training and export</span>
+          <span class="tag oss-card__license">Apache-2.0</span>
+        </a>
+        <a class="oss-card" href="https://github.com/nerfstudio-project/gsplat" target="_blank" rel="noopener">
+          <span class="oss-card__name">gsplat</span>
+          <span class="oss-card__role">CUDA rasterizer underneath splatfacto</span>
+          <span class="tag oss-card__license">Apache-2.0</span>
+        </a>
+        <a class="oss-card" href="https://github.com/pytorch/pytorch" target="_blank" rel="noopener">
+          <span class="oss-card__name">PyTorch</span>
+          <span class="oss-card__role">GPU training framework</span>
+          <span class="tag oss-card__license">BSD</span>
+        </a>
+        <a class="oss-card" href="https://github.com/playcanvas/splat-transform" target="_blank" rel="noopener">
+          <span class="oss-card__name">splat-transform</span>
+          <span class="oss-card__role">Crops floaters and compresses to SOG for the web</span>
+          <span class="tag oss-card__license">MIT</span>
+        </a>
+        <a class="oss-card" href="https://github.com/playcanvas/engine" target="_blank" rel="noopener">
+          <span class="oss-card__name">PlayCanvas engine</span>
+          <span class="oss-card__role">Renders the splats on this page</span>
+          <span class="tag oss-card__license">MIT</span>
+        </a>
+    </div>
+    <p class="video-note" style="margin-top: var(--space-4);">Everything above is permissively licensed except FFmpeg (LGPL/GPL) and the SuperPoint weights (non-commercial research only), so the hloc path is for research use as it stands.</p>
+    <p style="margin-top: var(--space-4);"><a class="btn btn--ghost" href="https://github.com/thebhanusingh/Claude_Test" target="_blank" rel="noopener">See my pipeline scripts on GitHub</a></p>
+
     <p style="color: var(--muted); max-width: 68ch; margin-top: var(--space-5);">The same pipeline sits under my MFA thesis, <a class="text-link" href="../research/relightable-3dgs.html">From Capture to Cut</a>, which works on relighting captured spaces so they can be used on virtual production LED stages.</p>
 
     <div class="prev-next" style="margin-top: var(--space-7);">
