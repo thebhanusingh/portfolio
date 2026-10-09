@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Captured Spaces — Bhanu Singh</title>
+<meta name="description" content="An office interior and a backyard exterior captured on a phone and turned into Gaussian splats you can explore in the browser.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230a0a0a'/%3E%3Ccircle cx='16' cy='17' r='6.5' fill='%23ffffff'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="../css/style.css">
+</head>
+<body style="--page-hue:30;">
+<a class="skip-link" href="#main">Skip to content</a>
+
+<header class="site-nav">
+  <a class="site-nav__mark" href="../index.html">Bhanu Singh<span class="dot">.</span></a>
+  <button class="site-nav__toggle" aria-label="Toggle navigation" aria-expanded="false">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/></svg>
+  </button>
+  <nav class="site-nav__links" data-open="false">
+    <a href="../index.html">Home</a>
+    <a href="../projects.html" aria-current="page">Work</a>
+    <a href="../about.html">About</a>
+    <a href="../research.html">Research</a>
+    <a href="../contact.html">Contact</a>
+  </nav>
+</header>
+
+<main id="main">
+  <div class="wrap page-header">
+    <span class="eyebrow">09 / Captures</span>
+    <h1>Captured Spaces</h1>
+    <p>Real spaces captured on a phone and turned into Gaussian splats you can move around in, right in the browser: an office interior and a backyard exterior, both from my own capture-to-splat pipeline.</p>
+    <div class="tool-list">
+      <span class="tag">Gaussian Splatting</span><span class="tag">nerfstudio</span><span class="tag">COLMAP</span><span class="tag">hloc</span><span class="tag">PlayCanvas</span>
+    </div>
+  </div>
+
+  <div class="wrap">
+    <h2>Office interior</h2>
+    <p style="color: var(--muted); max-width: 68ch; margin-top: var(--space-3);">A handheld 4K walk-through of an office, about three minutes long, with tilts up to the ceiling. Interiors are the hard case for capture: big blank white walls and ceilings give the camera solver nothing to match. COLMAP could place only 72% of 1,000 frames, even after doubling the frame density. Switching to hloc — learned SuperPoint features matched with LightGlue, with NetVLAD retrieval to choose image pairs — placed 981 of the 1,000 frames (98%) in a single model. I then trained the splat at full 1080p resolution on my 8 GB laptop GPU (splatfacto-big, 30,000 steps, about 50 minutes).</p>
+
+    <div class="splat-viewer" data-src="../assets/splats/room-IMG_6615.sog" data-rotation="0,0,180" data-camera="-0.6,0.2,-1.9" data-focus="0.3,-0.3,0.8" data-label="Office interior, Gaussian splat">
+      <div class="splat-viewer__stage">
+        <img class="splat-viewer__poster" src="../assets/splats/room-poster.jpg" alt="Gaussian splat of an office: wooden desks with monitors, white chairs, a dark carpet, whiteboard walls and a window at the far end" loading="lazy">
+        <button type="button" class="btn btn--gold splat-viewer__start">Explore in 3D <span class="splat-viewer__size">19 MB</span></button>
+        <p class="splat-viewer__status" role="status" aria-live="polite"></p>
+      </div>
+      <div class="splat-viewer__bar">
+        <p class="splat-viewer__hint"><span class="splat-viewer__hint--mouse">Drag to orbit · scroll to zoom · right-drag to look around, then WASD to walk · Shift-drag to pan</span><span class="splat-viewer__hint--touch">One finger to orbit · pinch to zoom · two fingers to pan</span></p>
+        <div class="splat-viewer__actions">
+          <button type="button" class="btn btn--ghost" data-action="reset">Reset view</button>
+          <button type="button" class="btn btn--ghost" data-action="fullscreen">Fullscreen</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="stat-row">
+      <div><span class="eyebrow">Frames placed</span>72% → 98% (COLMAP → hloc)</div>
+      <div><span class="eyebrow">Splat</span>1.3M Gaussians trained; 1.24M in this web version</div>
+      <div><span class="eyebrow">File size</span>About 320 MB → 19 MB after compression</div>
+      <div><span class="eyebrow">Training</span>About 50 min on an 8 GB laptop GPU</div>
+    </div>
+    <p class="video-note" style="margin-top: var(--space-4);">Capture lesson: keep furniture or an edge in frame. Every stretch the solver couldn't place was the camera facing bare wall or ceiling, which is also why the ceiling is the softest part of the splat.</p>
+
+    <h2 style="margin-top: var(--space-7);">Backyard exterior</h2>
+    <p style="color: var(--muted); max-width: 68ch; margin-top: var(--space-3);">A 1080p, 60 fps phone video of a backyard: house siding, sheds, a fence and dense planting. Trained on the school workstation (RTX PRO 6000, 96 GB) with splatfacto-big for 60,000 steps, it grew to 4.15 million Gaussians, almost three times what my laptop could fit. For the web it's reduced to 2.3 million Gaussians with base color only, at 27 MB.</p>
+
+    <div class="splat-viewer" data-src="../assets/splats/backyard-IMG_6557.sog" data-rotation="0,0,180" data-camera="0,0.42,1.25" data-focus="0,0.05,-1.5" data-label="Backyard exterior, Gaussian splat">
+      <div class="splat-viewer__stage">
+        <img class="splat-viewer__poster" src="../assets/splats/backyard-poster.jpg" alt="Gaussian splat of a backyard: a grey-sided house, a shed, a wooden fence, a tree trunk and red and blue Adirondack chairs on the lawn" loading="lazy">
+        <button type="button" class="btn btn--gold splat-viewer__start">Explore in 3D <span class="splat-viewer__size">27 MB</span></button>
+        <p class="splat-viewer__status" role="status" aria-live="polite"></p>
+      </div>
+      <div class="splat-viewer__bar">
+        <p class="splat-viewer__hint"><span class="splat-viewer__hint--mouse">Drag to orbit · scroll to zoom · right-drag to look around, then WASD to walk · Shift-drag to pan</span><span class="splat-viewer__hint--touch">One finger to orbit · pinch to zoom · two fingers to pan</span></p>
+        <div class="splat-viewer__actions">
+          <button type="button" class="btn btn--ghost" data-action="reset">Reset view</button>
+          <button type="button" class="btn btn--ghost" data-action="fullscreen">Fullscreen</button>
+        </div>
+      </div>
+    </div>
+
+    <h2 style="margin-top: var(--space-7);">How they're made</h2>
+    <div class="decision-list">
+      <div><span class="eyebrow">Capture</span><p>A slow handheld phone video, walking around the space.</p></div>
+      <div><span class="eyebrow">Frames</span><p>The sharpest frame in each short window, measured by blur, rather than evenly spaced frames.</p></div>
+      <div><span class="eyebrow">Camera solve</span><p>COLMAP, or hloc for low-texture interiors, with a check that stops training if only part of the video was solved.</p></div>
+      <div><span class="eyebrow">Training</span><p>nerfstudio splatfacto-big at full resolution, kept in the camera solve's own coordinates so the splat lines up with the tracking data.</p></div>
+      <div><span class="eyebrow">Web</span><p>Cleaned up, compressed to PlayCanvas SOG, and shown here with the PlayCanvas engine.</p></div>
+    </div>
+    <p style="color: var(--muted); max-width: 68ch; margin-top: var(--space-5);">The same pipeline sits under my MFA thesis, <a class="text-link" href="../research/relightable-3dgs.html">From Capture to Cut</a>, which works on relighting captured spaces so they can be used on virtual production LED stages.</p>
+
+    <div class="prev-next" style="margin-top: var(--space-7);">
+      <a href="playable-ue5-environment.html">&larr; Playable UE5 Environment</a>
+      <a href="../projects.html">All work &rarr;</a>
+    </div>
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap site-footer__row">
+    <div class="site-footer__links">
+      <a href="../index.html">Home</a>
+      <a href="../projects.html">Work</a>
+      <a href="../about.html">About</a>
+      <a href="../research.html">Research</a>
+      <a href="../contact.html">Contact</a>
+      <a href="mailto:bsingh21@student.scad.edu">Email</a>
+    </div>
+    <small>&copy; <span data-year>2026</span> Bhanu Singh</small>
+  </div>
+</footer>
+
+<script src="../js/main.js"></script>
+<script src="../js/analytics.js" defer></script>
+<script src="../js/starfield.js"></script>
+<script src="../js/ambient-color.js"></script>
+<script type="module" src="../js/splat-viewer.js"></script>
+</body>
+</html>
