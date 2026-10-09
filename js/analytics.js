@@ -11,6 +11,7 @@
  *   video-play      first play of a video
  *   video-progress  25 / 50 / 75 / 100 % of a video watched
  *   card-click      which card a visitor opened, and from where
+ *   splat-open      a visitor opened a 3D Gaussian splat viewer
  *   email-click, resume-download, file-download, outbound-click
  *
  * Setup: paste the Website ID from Umami (Settings -> Websites -> Edit)
@@ -252,6 +253,12 @@
   /* ---------- clicks ---------- */
 
   document.addEventListener('click', function (e) {
+    var splat = e.target.closest && e.target.closest('.splat-viewer__start');
+    if (splat) {
+      var viewer = splat.closest('.splat-viewer');
+      send('splat-open', { page: page, name: clean(viewer && viewer.getAttribute('data-label'), 120) });
+      return;
+    }
     var link = e.target.closest && e.target.closest('a[href]');
     if (!link) return;
     var href = link.getAttribute('href');

@@ -19,6 +19,8 @@ css/street.css                 Home hero street-scene styles (currently unused
                                 on the live page — kept for a future revisit)
 js/main.js                      Nav toggle, footer year
 js/analytics.js                  Visitor analytics (Umami), see below
+js/splat-viewer.js               3D Gaussian splat viewer (loads js/vendor/playcanvas on click)
+assets/splats/                   Compressed splats (.sog) and their preview images
 js/street-scene.js               Interactive street-scene behavior (unused,
                                   same reason as above)
 assets/                            Images, video, résumé, research docs
@@ -66,6 +68,7 @@ totals them, broken down by property.
 | `section-view` | an `h2` section on screen 1s+ | `page`, `section` |
 | `card-view` | a project/research card on screen 1s+ | `page`, `card`, `position` |
 | `card-click` | a card is opened | `page`, `card` |
+| `splat-open` | a 3D splat viewer is opened | `page`, `name` |
 | `media-view` | an image/video on screen 1.5s+ | `page`, `type`, `name` (caption or alt text) |
 | `video-play` / `video-progress` | first play, then 25/50/75/100 % | `page`, `name`, `percent` |
 | `email-click`, `resume-download`, `file-download`, `outbound-click` | link clicks | `page`, plus `file` / `url` |
