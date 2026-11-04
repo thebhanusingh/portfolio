@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Shadow-Free Gaussian Splatting — Bhanu Singh</title>
+<meta name="description" content="Research paper: a training-free method that estimates the sun from cast-shadow geometry and removes baked-in shadows from a finished 3D Gaussian splat by surface-aware inpainting.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230a0a0a'/%3E%3Ccircle cx='16' cy='17' r='6.5' fill='%23ffffff'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="../css/style.css">
+</head>
+<body style="--page-hue:40;">
+<a class="skip-link" href="#main">Skip to content</a>
+
+<header class="site-nav">
+  <a class="site-nav__mark" href="../index.html">Bhanu Singh<span class="dot">.</span></a>
+  <button class="site-nav__toggle" aria-label="Toggle navigation" aria-expanded="false">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/></svg>
+  </button>
+  <nav class="site-nav__links" data-open="false">
+    <a href="../index.html">Home</a>
+    <a href="../projects.html">Work</a>
+    <a href="../about.html">About</a>
+    <a href="../research.html" aria-current="page">Research</a>
+    <a href="../contact.html">Contact</a>
+  </nav>
+</header>
+
+<main id="main">
+  <div class="wrap page-header">
+    <span class="eyebrow">01 / Research paper · Preprint, October 2026</span>
+    <h1>Shadow-Free Gaussian Splatting</h1>
+    <p>Sun estimation from cast-shadow geometry and surface-aware inpainting of 3D Gaussian splats. My first research paper, and part of the work behind my MFA thesis, <a class="text-link" href="relightable-3dgs.html">From Capture to Cut</a>.</p>
+    <div class="tool-list">
+      <span class="tag">3D Gaussian Splatting</span><span class="tag">Shadow removal</span><span class="tag">Sun estimation</span><span class="tag">Shadow mapping</span><span class="tag">Structure tensor</span><span class="tag">Exemplar inpainting</span>
+    </div>
+  </div>
+
+  <div class="wrap">
+    <h2>In short</h2>
+    <p style="color: var(--muted); max-width: 68ch; margin-top: var(--space-3);">A Gaussian splat trained outdoors under one sun stores that moment's shadows in the colours of its Gaussians, so the shadows travel with the model wherever it's moved or relit. Instead of decomposing the scene into materials and lighting, this paper treats shadow removal as careful retouching in 3D: work out which Gaussians are in shadow and why, then repaint them from sunlit Gaussians of the same surface, following the direction of its texture. The rule is "same surface and lit, not simply the brightest thing nearby." It needs no retraining and works on a finished splat from a single phone video.</p>
+
+    <div class="stat-row">
+      <div><span class="eyebrow">Sun direction</span>Within 0.43° of the true sun elevation on the chair scene</div>
+      <div><span class="eyebrow">Ground shadow</span>From 5–7% to 97% of the surrounding brightness</div>
+      <div><span class="eyebrow">Fine detail</span>87–101% of the surrounding concrete restored</div>
+      <div><span class="eyebrow">No retraining</span>Edits a finished splat; apart from a short detector fine-tune, each step takes seconds to minutes on a laptop GPU</div>
+    </div>
+
+    <h2 style="margin-top: var(--space-7);">Why shadows get baked in</h2>
+    <p style="color: var(--muted); max-width: 68ch; margin-top: var(--space-3);">Training only tries to match the input photos. Under one sun, a point inside a cast shadow is always seen dark, so its Gaussians are fitted dark; there is never an observation of that point in sunlight. The usual answer is inverse rendering, splitting each Gaussian into albedo, normal and lighting. I tried two such methods early on (GS-IR and GaussianShader), and with a single hard sun and one capture the cast shadows stayed in the recovered albedo. This paper makes the missing observation explicit instead: borrow it from a sunlit part of the same surface, in the spirit of exemplar-based image inpainting, but in 3D and guided by geometry.</p>
+
+    <h2 style="margin-top: var(--space-7);">The method</h2>
+    <figure class="media-item" style="margin-top: var(--space-4);">
+      <img src="../assets/research/img/shadow-free/pipeline.png" alt="Pipeline diagram: capture and structure-from-motion, shadow votes from 2D masks, surfaces and grain, sun direction, visibility, and fill" loading="lazy">
+      <figcaption>The pipeline. Shadow votes (green) are a shared input: 2D shadow masks from every frame, transferred onto the Gaussians.</figcaption>
+    </figure>
+    <ol class="process-list">
+      <li><span class="eyebrow">1 · Capture</span><p>Phone video, the sharpest frame in each of 650 windows, COLMAP camera poses, and a splatfacto-big splat kept in COLMAP's coordinates.</p></li>
+      <li><span class="eyebrow">Shadow votes</span><p>A published shadow detector (SDDNet) marks shadow in every frame; each Gaussian's shadow fraction is the share of its visible views that fall inside the mask.</p></li>
+      <li><span class="eyebrow">2 · Surfaces and grain</span><p>Gaussians are grouped into surfaces from their shape alone, and each surface's texture direction (grain) comes from a structure tensor of the Gaussians' long axes. Colour is never used, so a shadow edge never splits a surface.</p></li>
+      <li><span class="eyebrow">3 · Sun direction</span><p>An orthographic shadow map predicts the object's cast shadow for each candidate sun, scored by boundary chamfer distance against the observed shadow outline, with the height of the receiving surface fitted at the same time.</p></li>
+      <li><span class="eyebrow">4 · Visibility</span><p>Every Gaussian is labelled sunlit, attached shadow (facing away) or cast shadow (blocked), and checked against a brightness-and-colour rule and a shadow detector fine-tuned on automatically generated 3D labels.</p></li>
+      <li><span class="eyebrow">5 · Fill</span><p>On the object, shadowed Gaussians are repainted from sunlit ones of the same surface, searched along the grain. On the ground, a clone stamp copies sunlit Gaussians, both colour and geometry, into the shadow.</p></li>
+    </ol>
+
+    <h2 style="margin-top: var(--space-7);">Experiment 1: a plastic chair on grass</h2>
+    <p style="color: var(--muted); max-width: 68ch; margin-top: var(--space-3);">A single navy plastic chair, captured on an iPhone 15 Pro Max in Savannah: 650 frames, a splat of 2.89 million Gaussians. One material makes brightness a direct measure of light, and the capture's GPS position and time give the true sun elevation, 55.51°.</p>
+    <figure class="media-item" style="margin-top: var(--space-4);">
+      <img src="../assets/research/img/shadow-free/chair-surfaces.jpg" alt="The chair split into coloured surfaces from top and two side views: seat slats, backrest slats, arms and legs; grass in grey" loading="lazy">
+      <figcaption>Surfaces found from Gaussian shape alone, one colour per surface. The grain agrees with the photo texture to 9.1° on interior pixels, against 43.6° for a random direction.</figcaption>
+    </figure>
+    <p style="color: var(--muted); max-width: 68ch; margin-top: var(--space-3);">The sun estimate was built up one change at a time. Letting everything cast shadow made grass blades throw false shadows across the lawn; restricting casters to the chair's surfaces, scoring the shadow's outline instead of its area, and fitting the height of the grass tops brought it to 55.08° against the true 55.51°.</p>
+    <table class="data-table">
+      <thead><tr><th>Version</th><th>Change</th><th>Elevation</th><th>Error</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td>Everything above the ground casts shadow (area score)</td><td>57.0°</td><td>+1.5°</td></tr>
+        <tr><td>2</td><td>Only the chair's surfaces cast shadow</td><td>55.0°</td><td>−0.5° (unstable)</td></tr>
+        <tr><td>3</td><td>Also the chair's shadow on itself</td><td>55.5°</td><td>≈ 0 (± 2.5°)</td></tr>
+        <tr><td>4</td><td>Boundary chamfer instead of area</td><td>56.3°</td><td>+0.8° (stable)</td></tr>
+        <tr><td>5</td><td>Also fit the receiver offset</td><td>55.08°</td><td>−0.43°</td></tr>
+      </tbody>
+    </table>
+    <figure class="media-item" style="margin-top: var(--space-4);">
+      <img src="../assets/research/img/shadow-free/chair-sun-fit.jpg" alt="Observed and predicted shadow outlines overlapping, with score curves against sun elevation and a clear minimum at 55.08 degrees" loading="lazy">
+      <figcaption>Final sun fit: observed (orange) and predicted (blue) outlines overlap almost everywhere (green). The fitted offset puts the shadow edge on the grass tops, about 2 cm above the average grass Gaussian.</figcaption>
+    </figure>
+    <figure class="media-item" style="margin-top: var(--space-4);">
+      <img src="../assets/research/img/shadow-free/chair-shadow-prediction.jpg" alt="Three panels: the photo, the predicted shadow drawn in red over the splat, and the shadow detector outline" loading="lazy">
+      <figcaption>With the fitted sun, geometry finds 98% of the ground shadow; the predicted shadow (red) sits on the real one.</figcaption>
+    </figure>
+    <p style="color: var(--muted); max-width: 68ch; margin-top: var(--space-3);">On the chair, brightness read from about 128 photos per Gaussian falls into two clear groups, sunlit about 13 times brighter than shade. Fine-tuning the off-the-shelf detector on automatic labels for about 2.5 minutes more than doubled its agreement with the geometry on held-out frames (IoU 0.21 → 0.48). The fill repainted 11,287 of the chair's 24,445 Gaussians and lifted shadowed plastic to 87% of sunlit brightness.</p>
+    <figure class="media-item" style="margin-top: var(--space-4);">
+      <img src="../assets/research/img/shadow-free/chair-fill.jpg" alt="Four panels of the chair: real photo, original splat with shadows, copy fill and ratio fill" loading="lazy">
+      <figcaption>Real photo, original splat, copy fill and ratio fill. Ratio mode keeps more of the plastic texture; speckled per-Gaussian labels still leave some mottling.</figcaption>
+    </figure>
+
+    <h2 style="margin-top: var(--space-7);">Experiment 2: a painted bear on concrete</h2>
+    <p style="color: var(--muted); max-width: 68ch; margin-top: var(--space-3);">A 15–20 cm painted resin figurine on a concrete driveway, captured for these tests (782,433 Gaussians, true sun elevation 44.27°). It's deliberately harder: many colours, curved sculpted surfaces, and a very dark shadow at 5–7% of the sunlit concrete.</p>
+    <p style="color: var(--muted); max-width: 68ch; margin-top: var(--space-3);">Here the object-side stages break, and the paper reports why. Few Gaussians are flat enough to give a normal, so surfaces and grain are weak; with the legs missing from the casters, the sun comes out 4.98° too high. Brightness on a painted object is mostly paint, so the single-material shadow model fails, and the fill pushes shaded colours toward their sunlit neighbours across paints.</p>
+    <figure class="media-item" style="margin-top: var(--space-4);">
+      <img src="../assets/research/img/shadow-free/bear-fill-failure.jpg" alt="Close-up of the bear: photo, original splat, and the fill, where shaded areas turn purple and blue" loading="lazy">
+      <figcaption>A failure, analysed: photo, original splat, after the fill. Shaded hat, jacket and trousers turn purple and blue, because the fill assumes one material.</figcaption>
+    </figure>
+
+    <h3 style="margin-top: var(--space-6);">Removing the ground shadow</h3>
+    <p style="color: var(--muted); max-width: 68ch; margin-top: var(--space-3);">The concrete shadow is where the method works best. A per-Gaussian brightness gain lifts the shadow but leaves a flat patch: it can only multiply colour that was there, and texture never recorded in sunlight can't come back. A colour clone stamp copies sunlit concrete in with one shift so the pattern stays intact, but still leaves a soft smudge. The reason turned out to be geometry: Gaussians trained on the dark shadow are 1.7 times larger and more opaque than those on sunlit concrete, so no colour gives them the concrete's grain. The geometry clone stamp therefore replaces the shadowed Gaussians with translated copies of sunlit ones, sizes and all, choosing sources that avoid copying cracks.</p>
+    <figure class="media-item" style="margin-top: var(--space-4);">
+      <img src="../assets/research/img/shadow-free/ground-colour-vs-geometry.jpg" alt="Four columns: photo, original splat with shadow, colour clone stamp, and geometry clone stamp with crisp concrete grain" loading="lazy">
+      <figcaption>Photo, original splat, colour clone stamp, geometry clone stamp. Only cloning the Gaussians themselves brings back the crisp grain of sunlit concrete.</figcaption>
+    </figure>
+    <div class="media-gallery" style="margin-top: var(--space-4);">
+      <figure class="media-item">
+        <img src="../assets/research/img/shadow-free/ground-splat-sizes.png" alt="Histogram of Gaussian sizes: the shadowed patch has larger Gaussians than nearby sunlit concrete; cloned copies match the sunlit concrete" loading="lazy">
+        <figcaption>Why colour isn't enough: shadowed Gaussians are 1.7× larger (median 0.0203 vs 0.0117); the clones match sunlit concrete.</figcaption>
+      </figure>
+      <figure class="media-item">
+        <img src="../assets/research/img/shadow-free/ground-measures.png" alt="Bar chart of centre brightness, edge brightness and fine detail for each fill variant, relative to the sunlit surroundings" loading="lazy">
+        <figcaption>Every variant against the sunlit surroundings (1.0 = a match). Only the geometry clone stamp restores both brightness and fine detail.</figcaption>
+      </figure>
+    </div>
+    <table class="data-table" style="margin-top: var(--space-4);">
+      <thead><tr><th>Variant</th><th>What it changes</th><th>Centre</th><th>Edge</th><th>Detail</th></tr></thead>
+      <tbody>
+        <tr><td>Original splat</td><td>—</td><td>0.06</td><td>0.56</td><td>0.37</td></tr>
+        <tr><td>C</td><td>Per-channel gain</td><td>0.63</td><td>0.85</td><td>0.44</td></tr>
+        <tr><td>T</td><td>Colour clone stamp, one shift</td><td>0.90</td><td>0.87</td><td>0.73</td></tr>
+        <tr><td>U</td><td>T + outline blend + brightness match</td><td>0.96</td><td>0.96</td><td>0.70</td></tr>
+        <tr><td>V</td><td>U + detail ×1.4</td><td>0.91</td><td>0.95</td><td>0.93</td></tr>
+        <tr><td>W</td><td>Geometry clone stamp, one shift</td><td>0.97</td><td>0.98</td><td>1.01</td></tr>
+        <tr><td>Y</td><td>W + crack-aware sources, up to 6 shifts</td><td>0.97</td><td>0.98</td><td>0.87</td></tr>
+      </tbody>
+    </table>
+    <p class="video-note" style="margin-top: var(--space-2);">Median of five rendered views. W copies a piece of the real crack into the patch; Y avoids it, at the cost of plainer source concrete.</p>
+
+    <h2 style="margin-top: var(--space-7);">Limitations and next steps</h2>
+    <div class="decision-list">
+      <div><span class="eyebrow">Materials</span><p>Brightness-based labels and fills assume one material. A painted object needs paint and shade separated, for example by comparing each spot with itself across views and sun angles.</p></div>
+      <div><span class="eyebrow">Scale</span><p>Settings that are physical sizes must follow the object's size: a grid that suits a chair is coarse for a 17 cm figurine.</p></div>
+      <div><span class="eyebrow">Ground</span><p>The geometry clone stamp works on flat ground with repeating texture; curved, sloped or strongly patterned ground needs the shift generalised along the surface. Seam-aware blending is a natural refinement.</p></div>
+      <div><span class="eyebrow">Ground truth</span><p>Ground truth exists only for the sun elevation. Shadow-free reference captures, under overcast sky or with the object removed, would allow direct error measurement of the fills.</p></div>
+      <div><span class="eyebrow">Ongoing</span><p>These are the first two scenes of an ongoing study. A second figurine on concrete is already captured; results and a comparison across all scenes will come in later versions.</p></div>
+    </div>
+
+    <h2 style="margin-top: var(--space-7);">Why it matters</h2>
+    <p style="color: var(--muted); max-width: 68ch; margin-top: var(--space-3);">A captured location is only useful on a virtual production stage, or in an architectural visualization, if it can be lit for the shot rather than for the moment it was filmed. Baked-in sun is the main thing standing in the way. This paper is a first step toward the zero-shadow pass in my thesis: removing those shadows from a finished splat without retraining, and showing exactly where that works and where it doesn't.</p>
+
+    <h2 style="margin-top: var(--space-7);">Cite</h2>
+    <p class="video-note" style="margin-top: var(--space-3);">Bhanu Singh. Shadow-Free Gaussian Splatting: Sun Estimation from Cast-Shadow Geometry and Surface-Aware Inpainting of 3D Gaussian Splats. Preprint, 2026.</p>
+
+    <div class="prev-next" style="margin-top: var(--space-7);">
+      <a href="relightable-3dgs.html">&larr; From Capture to Cut</a>
+      <a href="art-of-scale.html">The Art of Scale &rarr;</a>
+    </div>
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap site-footer__row">
+    <div class="site-footer__links">
+      <a href="../index.html">Home</a>
+      <a href="../projects.html">Work</a>
+      <a href="../about.html">About</a>
+      <a href="../research.html">Research</a>
+      <a href="../contact.html">Contact</a>
+      <a href="mailto:bsingh21@student.scad.edu">Email</a>
+    </div>
+    <small>&copy; <span data-year>2026</span> Bhanu Singh</small>
+  </div>
+</footer>
+
+<script src="../js/main.js"></script>
+<script src="../js/analytics.js" defer></script>
+<script src="../js/starfield.js"></script>
+<script src="../js/ambient-color.js"></script>
+</body>
+</html>
