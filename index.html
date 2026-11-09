@@ -51,28 +51,33 @@
       <span class="eyebrow">Featured research · Preprint, 2026</span>
       <a class="btn btn--ghost" href="research.html">All research</a>
     </div>
-    <a class="featured-research__card" href="research/shadow-free-splatting.html">
-      <figure class="featured-research__figure">
-        <picture>
-          <source media="(max-width: 620px)" srcset="assets/research/img/shadow-free/ground-before-after.jpg">
-          <img src="assets/research/img/shadow-free/ground-colour-vs-geometry.jpg" alt="A figurine's dark cast shadow on concrete, shown four ways: photo, original splat, colour-only fill, and the geometry clone stamp, where the shadow is gone and the concrete grain is crisp" loading="eager">
-        </picture>
-        <figcaption><span>Photo</span><span>Original splat</span><span>Colour fill</span><span>Geometry clone stamp</span></figcaption>
-      </figure>
+    <div class="featured-research__card">
+      <div class="compare" data-compare style="--pos: 50%;">
+        <img class="compare__img" src="assets/research/img/shadow-free/hero-chair-before.jpg" alt="Original Gaussian splat of a navy plastic chair on grass, with a dark baked-in shadow arc across the backrest and shaded inner sides" width="799" height="416" loading="eager">
+        <img class="compare__img compare__after" src="assets/research/img/shadow-free/hero-chair-after.jpg" alt="The same splat after shadow removal: the backrest and inner sides repainted to sunlit blue" width="799" height="416" loading="eager">
+        <div class="compare__line" aria-hidden="true"><span class="compare__knob"></span></div>
+        <span class="compare__label compare__label--before" aria-hidden="true">Original splat</span>
+        <span class="compare__label compare__label--after" aria-hidden="true">Shadow-free</span>
+        <input class="compare__range" type="range" min="0" max="100" value="50" aria-label="Drag to compare the original splat with the shadow-free result">
+      </div>
       <div class="featured-research__body">
-        <h2 id="featured-research-title">Shadow-Free Gaussian Splatting</h2>
+        <div class="featured-research__text">
+        <h2 id="featured-research-title"><a href="research/shadow-free-splatting.html">Shadow-Free Gaussian Splatting</a></h2>
         <p>A Gaussian splat captured under one sun keeps that sun's shadows baked into its colours, so they follow the model onto any stage or into any relight. My first research paper removes them from a finished splat without retraining: it works out where the sun was from the shape of the shadow itself, then repaints shadowed Gaussians from sunlit ones on the same surface.</p>
+        </div>
+        <div class="featured-research__facts">
         <div class="stat-row">
           <div><span class="eyebrow">Sun direction</span>Within 0.43° of the true elevation</div>
           <div><span class="eyebrow">Ground shadow</span>5–7% → 97% of the sunlit brightness</div>
           <div><span class="eyebrow">Fine detail</span>87–101% of the surrounding concrete</div>
         </div>
-        <span class="btn btn--gold featured-research__cta">Read the paper summary</span>
+        <a class="btn btn--gold featured-research__cta" href="research/shadow-free-splatting.html">Read the paper summary</a>
+        </div>
       </div>
-    </a>
+    </div>
 
     <h3 style="margin-top: var(--space-6);">The thesis behind it</h3>
-    <a class="card project-card" href="research/relightable-3dgs.html" style="display:grid; grid-template-columns: 1fr 1.3fr; gap: var(--space-5); align-items:center; margin-top: var(--space-5);">
+    <a class="card project-card thesis-card" href="research/relightable-3dgs.html">
       <div class="art-frame" style="padding:0; background:none; border:0;">
         <img src="assets/research/img/thesis/pipeline-diagram.png" alt="Eight-stage relightable pipeline diagram from Bhanu's MFA thesis" loading="lazy" style="width:100%; height:100%; object-fit:cover; border-radius: var(--radius); border: 1px solid var(--border); aspect-ratio:16/10;">
       </div>
@@ -219,6 +224,7 @@
 </footer>
 
 <script src="js/main.js"></script>
+<script src="js/compare.js" defer></script>
 <script src="js/analytics.js" defer></script>
 <script src="js/starfield.js"></script>
 <script src="js/ambient-color.js"></script>
