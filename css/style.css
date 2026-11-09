@@ -982,38 +982,99 @@ section { padding-block: var(--space-8); }
 /* -------------------- featured research (home) -------------------- */
 .featured-research { padding-top: 0; }
 .featured-research__card {
-  display: block;
   margin-top: var(--space-4);
   border: 1px solid var(--border);
   border-radius: var(--radius);
   background: var(--card);
   overflow: hidden;
-  transition: border-color 0.2s var(--ease-standard), transform 0.2s var(--ease-standard);
 }
-.featured-research__card:hover { border-color: var(--accent-dim); }
-.featured-research__card:hover .featured-research__cta { background: var(--fg); }
-.featured-research__figure { margin: 0; }
-.featured-research__figure img { display: block; width: 100%; height: auto; }
-.featured-research__figure figcaption {
+.featured-research__body {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  border-top: 1px solid var(--border);
+  grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
+  gap: var(--space-5) var(--space-6);
+  align-items: start;
+  padding: var(--space-5);
 }
-.featured-research__figure figcaption span {
-  padding: var(--space-2) var(--space-3);
+.featured-research__body h2 { font-size: clamp(1.9rem, 3.4vw, 2.8rem); }
+.featured-research__body h2 a:hover { color: var(--accent); }
+.featured-research__text p { margin-top: var(--space-3); }
+.featured-research__facts .stat-row { margin-top: var(--space-2); grid-template-columns: 1fr; gap: var(--space-3); }
+.featured-research__cta { margin-top: var(--space-5); }
+@media (max-width: 900px) {
+  .featured-research__body { grid-template-columns: 1fr; gap: var(--space-4); padding: var(--space-4) var(--space-3); }
+  .featured-research__facts .stat-row { grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); }
+}
+.thesis-card {
+  display: grid;
+  grid-template-columns: 1fr 1.3fr;
+  gap: var(--space-5);
+  align-items: center;
+  margin-top: var(--space-4);
+}
+@media (max-width: 720px) {
+  .thesis-card { grid-template-columns: 1fr; gap: var(--space-3); }
+}
+
+/* before/after compare slider (js/compare.js sets --pos) */
+.compare {
+  position: relative;
+  overflow: hidden;
+  background: #0b0b0d;
+  user-select: none;
+  touch-action: pan-y;
+}
+.compare__img { display: block; width: 100%; height: auto; aspect-ratio: 799 / 416; }
+.compare__after { position: absolute; inset: 0; clip-path: inset(0 0 0 var(--pos)); }
+.compare__line {
+  position: absolute;
+  top: 0; bottom: 0;
+  left: var(--pos);
+  width: 2px;
+  margin-left: -1px;
+  background: #fff;
+  box-shadow: 0 0 12px rgba(0, 0, 0, 0.5);
+  pointer-events: none;
+}
+.compare__knob {
+  position: absolute;
+  top: 50%; left: 50%;
+  width: 40px; height: 40px;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.45);
+}
+.compare__knob::before, .compare__knob::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  border: 6px solid transparent;
+  transform: translateY(-50%);
+}
+.compare__knob::before { left: 6px; border-right-color: #111; }
+.compare__knob::after { right: 6px; border-left-color: #111; }
+.compare__label {
+  position: absolute;
+  bottom: var(--space-3);
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: rgba(11, 11, 13, 0.75);
+  color: #fff;
   font-family: var(--font-mono);
   font-size: 0.72rem;
   letter-spacing: 0.04em;
-  color: var(--muted-dim);
   text-transform: uppercase;
+  pointer-events: none;
 }
-.featured-research__figure figcaption span:last-child { color: var(--accent); }
-.featured-research__body { padding: var(--space-5); }
-.featured-research__body h2 { font-size: clamp(2rem, 4.2vw, 3.2rem); }
-.featured-research__body > p { margin-top: var(--space-3); font-size: 1.05rem; }
-.featured-research__cta { margin-top: var(--space-5); }
-@media (max-width: 620px) {
-  .featured-research__body { padding: var(--space-4) var(--space-3); }
-  .featured-research__figure figcaption { grid-template-columns: 1fr 1fr; }
-  .featured-research__figure figcaption span:nth-child(odd) { display: none; }
+.compare__label--before { left: var(--space-3); }
+.compare__label--after { right: var(--space-3); color: var(--accent); }
+.compare__range {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  opacity: 0;
+  cursor: ew-resize;
 }
+.compare:has(.compare__range:focus-visible) .compare__knob { outline: 3px solid var(--accent); outline-offset: 2px; }
